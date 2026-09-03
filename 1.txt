@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" id="themeColorMeta" content="#ebe3d6">
+    <title>القرآن الكريم</title>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap"></noscript>
+    <style>
+html{-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important;-moz-text-size-adjust:100%!important;-ms-text-size-adjust:100%!important;font-size:clamp(15px,1vw+10px,18px)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#f5f0eb;--bg-card:#fff;--text:#1a1a1a;--text-secondary:#5a5a5a;--gold:#c9a84c;--gold-light:#e0c878;--gold-dark:#a8862a;--gold-rgb:201,168,76;--green:#5d7a5d;--border:#e8e0d8;--shadow:0 2px 8px rgba(0,0,0,0.06);--radius:.75rem;--font-family:'Traditional Arabic','Arial',sans-serif;--font-ui:'Tajawal','Arial',sans-serif;--transition:.15s ease;--footer-height:2.5rem;--fs-base:clamp(14px,1rem,18px);--fs-large:clamp(18px,1.2rem,22px);--fs-small:clamp(10px,0.7rem,13px);--fs-xsmall:clamp(9px,0.6rem,11px);--text-scale:1;--display-scale:1}
+.dark{--bg:#0d0d0d;--bg-card:#1a1a1a;--text:#e8e8e8;--text-secondary:#a0a0a0;--border:#2a2a2a;--shadow:0 2px 8px rgba(0,0,0,0.5)}
+body{font-family:var(--font-family);background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;transition:background var(--transition),color var(--transition);padding-bottom:5rem;overflow-x:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;font-size:calc(var(--fs-base)*var(--text-scale))}
+body.modal-open{overflow:hidden;position:fixed;width:100%;height:100%}
+body.no-scroll{overflow:hidden}
+.reset-modal-open{overflow:hidden!important;position:fixed;width:100%;height:100%}
+.reset-modal-open .app-bar,.reset-modal-open .main,.reset-modal-open .bottom-player,.reset-modal-open .fixed-footer,.reset-modal-open .search-wrapper,.reset-modal-open .reader-selector,.reset-modal-open .surah-grid,.reset-modal-open .radio-big-btn,.reset-modal-open #menuToggle,.reset-modal-open .app-bar-actions{pointer-events:none!important;user-select:none!important}
+.app-bar{position:sticky;top:0;z-index:50;background:var(--bg);padding:calc(.6rem*var(--display-scale)) calc(1rem*var(--display-scale)) calc(.5rem*var(--display-scale));display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);transition:background var(--transition),border var(--transition)}
+.app-bar-center {flex:1;display:flex;align-items:center;justify-content:flex-start;gap:0.3rem;flex-wrap:wrap}
+.app-bar-title{font-size:calc(var(--fs-large)*var(--text-scale));font-weight:700;color:var(--gold-dark);font-family:var(--font-family);line-height:1.3}
+.developer-info{font-size:calc(.7rem*var(--text-scale));color:var(--text-secondary);margin-top:.15rem;width:100%;text-align:right}
+.network-indicator{font-size:calc(1.2rem*var(--display-scale));display:inline-flex;align-items:center;margin:0 0.2rem;cursor:pointer;transition:all 0.3s ease;position:relative}
+.network-indicator.online{color:#4caf50}
+.network-indicator.offline{color:#e74c3c}
+.network-indicator .network-status{display:inline-block;line-height:1;transition:transform 0.2s}
+.network-indicator:active .network-status{transform:scale(0.7)}
+.network-indicator.online .network-status{animation:pulse-green 2s infinite}
+.network-indicator.offline .network-status{animation:pulse-red 1s infinite}
+@keyframes pulse-green{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(0.9)}}
+@keyframes pulse-red{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+.app-bar-actions {display:flex;align-items:center;gap:calc(.6rem * var(--display-scale));min-width:2.5rem;justify-content:flex-end;flex-shrink:0}
+.app-bar-spacer{min-width:2.5rem}
+.app-bar-actions button{background:0 0;border:none;color:var(--text-secondary);font-size:calc(1.4rem*var(--display-scale));cursor:pointer;padding:calc(.3rem*var(--display-scale)) calc(.5rem*var(--display-scale));border-radius:calc(.5rem*var(--display-scale));transition:background .1s,color .2s}
+.app-bar-actions button:active{background:var(--border);color:var(--gold)}
+.app-bar-actions .sleep-timer-indicator{display:flex;align-items:center;gap:0.3rem;font-size:calc(0.9rem*var(--display-scale));color:var(--gold-dark);background:rgba(201,168,76,0.12);padding:0.1rem 0.6rem 0.1rem 0.4rem;border-radius:2rem;border:1px solid var(--gold);cursor:default;font-family:var(--font-ui);font-weight:600;white-space:nowrap;direction:ltr}
+.app-bar-actions .sleep-timer-indicator i{font-size:calc(0.9rem*var(--display-scale));margin-left:0.2rem}
+.main{padding:calc(.75rem*var(--display-scale)) calc(1rem*var(--display-scale)) calc(1rem*var(--display-scale));max-width:40rem;margin:0 auto;transition:transform 0.8s cubic-bezier(0.34,1.56,0.64,1),opacity 0.8s ease-in-out;transform-origin:top center}
+.main.shrunk{transform:scale(0.8);opacity:0.7;pointer-events:none}
+.main.blurred{filter:blur(4px);pointer-events:none}
+.reader-selector{margin-bottom:calc(.5rem*var(--display-scale))}
+.reader-selector .reader-selector-row{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap}
+.reader-dropdown{position:relative;flex:1;min-width:0}
+.reader-dropdown-btn{width:100%;padding:calc(.6rem*var(--display-scale)) calc(1rem*var(--display-scale));background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-ui);font-size:calc(var(--fs-base)*var(--text-scale));display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background var(--transition),border var(--transition);box-shadow:var(--shadow);flex-wrap:wrap;gap:calc(.3rem*var(--display-scale))}
+.reader-dropdown-btn:active{background:var(--border)}
+.reader-dropdown-btn .arrow{color:var(--gold);font-size:calc(.7rem*var(--text-scale));transition:transform .2s}
+.reader-dropdown-btn.open .arrow{transform:rotate(180deg)}
+.reader-dropdown-btn .change-hint{font-size:calc(var(--fs-xsmall)*var(--text-scale));color:var(--gold);background:rgba(201,168,76,.15);padding:.05rem .6rem;border-radius:1rem;margin:0 .2rem;white-space:nowrap;display:inline-flex;align-items:center;gap:.2rem}
+.reader-dropdown-btn .selected-wrap{display:flex;align-items:center;flex:1;min-width:0;flex-wrap:wrap;gap:calc(.2rem*var(--display-scale))}
+.reader-dropdown-btn .selected-name{white-space:nowrap;font-weight:bold;overflow:hidden;text-overflow:ellipsis;max-width:100%;flex:1;font-size:calc(var(--fs-base)*var(--text-scale))}
+.reader-dropdown-btn .fav-reader-star{color:var(--gold);font-size:calc(1rem*var(--display-scale));cursor:pointer;padding:.2rem;opacity:.4;transition:opacity .2s}
+.reader-dropdown-btn .fav-reader-star.active{opacity:1}
+.reader-dropdown-btn .stats-btn{background:transparent;border:none;color:var(--text-secondary);font-size:calc(1rem*var(--display-scale));cursor:pointer;padding:0.1rem 0.3rem;display:flex;align-items:center;transition:color 0.2s}
+.reader-dropdown-btn .stats-btn:hover{color:var(--gold)}
+.reader-dropdown-menu{position:absolute;top:calc(100%+.3rem);left:0;right:0;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:60;max-height:calc(18rem*var(--display-scale));overflow-y:auto;display:none;padding:.25rem 0;transition:background var(--transition),border var(--transition)}
+.reader-dropdown-menu.show{display:block}
+.reader-item{display:flex;align-items:center;padding:calc(.6rem*var(--display-scale)) calc(1rem*var(--display-scale));cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;font-size:calc(var(--fs-base)*var(--text-scale));gap:0.5rem}
+.reader-item:active{background:var(--border)}
+.reader-item .reader-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reader-item .fav-star{flex:0 0 auto;width:1.5rem;text-align:center;color:var(--gold);font-size:calc(.9rem*var(--display-scale));opacity:.3;margin:0 0.3rem}
+.reader-item.active .fav-star{opacity:1}
+.reader-item.active{background:rgba(201,168,76,.08);font-weight:700}
+.reader-item .reader-radio-btn{flex:0 0 auto;cursor:pointer;padding:0.15rem 0.6rem;border-radius:0.5rem;font-size:1rem;transition:all 0.15s;background:rgba(201,168,76,0.1);border:1px solid var(--border);margin-right:0.3rem;min-width:2.2rem;text-align:center}
+.reader-item .reader-radio-btn i{color:var(--gold-dark);transition:color 0.2s ease}
+.reader-item .reader-radio-btn:hover{background:rgba(201,168,76,0.2)}
+.reader-item .reader-radio-btn:hover i{color:var(--gold)}
+.reader-item .reader-radio-btn.playing{background:#e74c3c;color:#fff;border-color:#e74c3c;animation:pulse-radio 1s infinite}
+.reader-item .reader-radio-btn.playing i{color:#fff}
+.reader-item .reader-radio-btn.playing:hover i{color:#fff}
+.reader-item .reader-radio-btn.disabled{opacity:0.3;cursor:not-allowed;pointer-events:none}
+@keyframes pulse-radio{0%,100%{opacity:1}50%{opacity:0.6}}
+.radio-big-btn{flex:0 0 auto;padding:0.5rem 1.5rem;font-size:calc(var(--fs-base)*var(--text-scale));min-width:120px;background:var(--gold);color:#fff;border:none;border-radius:var(--radius);font-family:var(--font-ui);font-weight:600;cursor:pointer;transition:background .2s,transform .15s;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;gap:calc(.5rem*var(--display-scale))}
+.radio-big-btn:active{transform:scale(0.95)}
+radio-row{display:flex;justify-content:center;margin-top:0.5rem;margin-bottom:0.3rem;width:100%}
+.radio-big-btn.playing{background:#e74c3c}
+.search-wrapper{position:relative;margin-bottom:calc(.75rem*var(--display-scale));display:flex;flex-wrap:wrap;align-items:center;background:var(--bg-card);border:1px solid var(--border);border-radius:calc(1.5rem*var(--display-scale));box-shadow:var(--shadow);padding:0 calc(.3rem*var(--display-scale));transition:border var(--transition),background var(--transition)}
+.search-wrapper:focus-within{border-color:var(--gold)}
+.search-wrapper .search-main-input{flex:1;min-width:0;padding:calc(.6rem*var(--display-scale)) .2rem calc(.6rem*var(--display-scale)) .2rem;background:transparent;border:none;color:var(--text);font-family:var(--font-ui);font-size:calc(var(--fs-base)*var(--text-scale));outline:0;direction:rtl}
+.search-wrapper .search-main-input::placeholder{color:var(--text-secondary);opacity:.7}
+.search-wrapper .search-icon{color:var(--text-secondary);font-size:calc(.9rem*var(--display-scale));padding:0 .2rem;display:flex;align-items:center}
+.search-wrapper .search-clear-btn{background:0 0;border:none;color:var(--text-secondary);font-size:calc(1rem*var(--display-scale));cursor:pointer;padding:0 calc(.4rem*var(--display-scale));display:flex;align-items:center}
+.search-wrapper .search-clear-btn.visible{display:flex}
+.search-wrapper .search-target{display:flex;gap:calc(.2rem*var(--display-scale));padding:0 .2rem}
+.search-wrapper .search-target button{background:0 0;border:1px solid var(--border);border-radius:calc(1rem*var(--display-scale));padding:calc(.2rem*var(--display-scale)) calc(.65rem*var(--display-scale));font-size:calc(1rem*var(--text-scale));cursor:pointer;color:var(--text-secondary);font-family:var(--font-ui);transition:all .15s;white-space:nowrap}
+.search-wrapper .search-target button.active{background:var(--gold);color:#fff;border-color:var(--gold)}
+.search-wrapper .filter-wrapper{display:flex;align-items:center;gap:0.2rem;padding:0 0.2rem;position:relative;flex-shrink:0}
+.filter-toggle-btn{padding:0.2rem 0.5rem;border:1px solid var(--border);border-radius:1.5rem;background:var(--bg-card);color:var(--text);font-family:var(--font-ui);font-size:calc(.7rem*var(--text-scale));cursor:pointer;display:flex;align-items:center;gap:0.15rem;transition:all 0.15s}
+.filter-toggle-btn:hover{border-color:var(--gold)}
+.filter-toggle-btn.open .filter-arrow{transform:rotate(180deg)}
+.filter-dropdown{position:absolute;top:calc(100%+4px);left:0;right:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:0.3rem 0;min-width:140px;display:none;z-index:60}
+.filter-dropdown.show{display:block}
+.filter-option{display:block;width:100%;padding:0.35rem 1rem;border:none;background:transparent;color:var(--text);font-family:var(--font-ui);font-size:calc(.75rem*var(--text-scale));cursor:pointer;text-align:right;transition:background 0.1s}
+.filter-option:hover{background:rgba(201,168,76,0.1)}
+.filter-option.active{background:var(--gold);color:#fff}
+.verify-progress-bar{display:none;margin-top:8px;padding:6px 12px;background:var(--bg-card);border-radius:20px;border:1px solid var(--border);font-size:0.8rem;align-items:center;gap:10px;flex-wrap:wrap;transition:all 0.3s ease}
+.verify-progress-bar .status{display:flex;align-items:center;gap:6px;flex:1;min-width:120px}
+.verify-progress-bar .count{font-weight:600;color:var(--gold-dark);white-space:nowrap}
+.verify-progress-bar .track{flex:1;min-width:50px;height:5px;background:var(--border);border-radius:5px;overflow:hidden}
+.verify-progress-bar .track .fill{height:100%;background:var(--gold);transition:width 0.3s ease;width:0%}
+.verify-progress-bar .cancel-btn{background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.1rem;padding:0 4px;transition:transform 0.2s}
+.verify-progress-bar .cancel-btn:active{transform:scale(0.8)}
+.verify-progress-bar .retry-all-btn{background:var(--gold);border:none;border-radius:12px;color:#fff;padding:2px 10px;font-size:0.7rem;cursor:pointer;transition:all 0.2s}
+.verify-progress-bar .retry-all-btn:active{transform:scale(0.95)}
+.verify-progress-bar .verify-btn{background:var(--gold);border:none;border-radius:12px;color:#fff;padding:2px 10px;font-size:0.7rem;cursor:pointer;transition:all 0.2s}
+.verify-progress-bar .verify-btn:active{transform:scale(0.95)}
+.stats-tooltip{display:none;position:absolute;top:calc(100%+8px);right:0;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:0.5rem 0.8rem;min-width:200px;z-index:45;font-size:calc(.75rem*var(--text-scale))}
+.stats-tooltip.show{display:block}
+.stats-tooltip .stat-item{display:flex;justify-content:space-between;padding:0.15rem 0;border-bottom:1px solid var(--border)}
+.stats-tooltip .stat-item:last-child{border-bottom:none}
+.stats-tooltip .stat-item .label{color:var(--text-secondary)}
+.stats-tooltip .stat-item .value{font-weight:600}
+.stats-tooltip .unavailable-list{max-height:120px;overflow-y:auto;font-size:calc(.7rem*var(--text-scale));color:#e74c3c;background:rgba(231,76,60,0.06);padding:0.3rem 0.6rem;border-radius:var(--radius);margin-top:0.3rem;border-right:2px solid #e74c3c}
+.stats-tooltip .unavailable-list .surah-item{display:flex;justify-content:space-between;padding:0.05rem 0;border-bottom:1px solid rgba(231,76,60,0.08)}
+.stats-tooltip .unavailable-list .surah-item:last-child{border-bottom:none}
+.stats-tooltip .btn-gold-small{padding:0.3rem 1.2rem;border:none;border-radius:1.5rem;background:var(--gold);color:#fff;font-family:var(--font-ui);font-weight:600;font-size:calc(.75rem*var(--text-scale));cursor:pointer;margin-top:0.5rem;width:100%;transition:all 0.15s}
+.stats-tooltip .btn-gold-small:active{transform:scale(0.95);background:var(--gold-dark)}
+.search-results-info{text-align:center;font-size:calc(var(--fs-xsmall)*var(--text-scale));color:var(--text-secondary);margin-top:calc(.3rem*var(--display-scale));display:none}
+.search-results-info.show{display:block}
+.reader-search-results{position:relative;top:auto;left:auto;right:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:40;max-height:calc(12rem*var(--display-scale));overflow-y:auto;display:none;margin-top:0.25rem;width:100%}
+.reader-search-results.show{display:block}
+.reader-search-item{padding:calc(.5rem*var(--display-scale)) calc(.75rem*var(--display-scale));cursor:pointer;border-bottom:1px solid var(--border);font-size:calc(var(--fs-base)*var(--text-scale));color:var(--text);transition:background .1s}
+.reader-search-item:last-child{border-bottom:none}
+.reader-search-item:active,.reader-search-item:hover{background:rgba(201,168,76,.08)}
+.ayah-result-item{padding:calc(.35rem*var(--display-scale)) calc(.6rem*var(--display-scale));border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;flex-direction:column;gap:0.1rem}
+.ayah-result-item:last-child{border-bottom:none}
+.ayah-result-item:hover{background:rgba(201,168,76,.05)}
+.ayah-result-item:active{background:rgba(201,168,76,.12)}
+.ayah-result-content .ayah-text{font-size:calc(var(--fs-small)*var(--text-scale));line-height:1.6;color:var(--text)}
+.ayah-result-content .ayah-meta{display:flex;justify-content:space-between;font-size:calc(var(--fs-xsmall)*var(--text-scale));color:var(--text-secondary)}
+.ayah-result-content .highlight-term{background:var(--gold-light);color:var(--gold-dark);padding:0.02rem 0.15rem;border-radius:0.15rem}
+.ayah-results-header{display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0.6rem;border-bottom:1px solid var(--border)}
+.ayah-results-header .results-title{font-size:0.7rem;color:var(--text-secondary)}
+.ayah-results-header .close-results-btn{background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:0.85rem;padding:0.1rem 0.3rem;border-radius:0.3rem;transition:all 0.15s}
+.ayah-results-header .close-results-btn:hover{color:var(--gold);background:rgba(201,168,76,.1)}
+.surah-grid{display:flex;flex-direction:column;gap:calc(.5rem*var(--display-scale));padding-bottom:calc(.1rem + var(--footer-height))}
+.surah-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:calc(.7rem*var(--display-scale)) calc(.8rem*var(--display-scale));box-shadow:var(--shadow);display:flex;flex-direction:column;gap:0;transition:all 0.2s ease;min-height:calc(3.6rem*var(--display-scale));border-left:3px solid transparent}
+.surah-card:active{transform:scale(0.98)}
+.surah-card.status-available{border-left-color:#4caf50}
+.surah-card.status-cached{border-left-color:var(--gold)}
+.surah-card.status-unavailable{border-left-color:#e74c3c;opacity:0.7}
+.surah-card.status-failed{border-left-color:#f39c12}
+.surah-card.status-pending{border-left-color:#3498db;animation:pulse-border 1.5s infinite}
+@keyframes pulse-border{0%,100%{border-left-color:#3498db}50%{border-left-color:transparent}}
+.surah-main-row{display:flex;align-items:center;gap:calc(.6rem*var(--display-scale));width:100%;min-height:calc(2.4rem*var(--display-scale))}
+.surah-number{width:calc(2.4rem*var(--display-scale));height:calc(2.4rem*var(--display-scale));border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(var(--fs-base)*var(--text-scale));flex-shrink:0;font-family:var(--font-ui)}
+.surah-name{font-size:calc(var(--fs-base)*var(--text-scale));font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.surah-actions{display:flex;gap:calc(.4rem*var(--display-scale));flex-shrink:0;align-items:center}
+.surah-actions button{background:0 0;border:none;color:var(--text-secondary);font-size:calc(1.3rem*var(--display-scale));cursor:pointer;padding:calc(.2rem*var(--display-scale)) calc(.35rem*var(--display-scale));border-radius:calc(.4rem*var(--display-scale));transition:all .15s ease;display:flex;align-items:center;justify-content:center;position:relative;width:calc(2.2rem*var(--display-scale));height:calc(2.2rem*var(--display-scale))}
+.surah-actions button:active{background:var(--border);transform:scale(0.9)}
+.surah-actions .play-btn{color:var(--gold-dark)}
+.surah-actions .play-btn.playing{color:var(--gold)}
+.surah-actions .play-btn.disabled{opacity:.3;pointer-events:none}
+.surah-actions .play-btn.verify-pending{opacity:.6;animation:pulse 1.5s infinite}
+.surah-actions .fav-btn{color:var(--gold);opacity:.4}
+.surah-actions .fav-btn.active{opacity:1}
+.surah-actions .read-btn {color:var(--gold-dark)}
+.surah-actions .read-btn:hover {color: var(--gold);}
+.surah-actions .read-btn:active {background: var(--border);transform: scale(0.9);}
+.surah-actions .download-btn{color:var(--green);opacity:.5;font-size:calc(1.3rem*var(--display-scale));cursor:pointer;position:relative;width:calc(2.2rem*var(--display-scale));height:calc(2.2rem*var(--display-scale));display:flex;align-items:center;justify-content:center}
+.surah-actions .download-btn .progress-ring{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg)}
+.surah-actions .download-btn .progress-ring .bg{fill:none;stroke:var(--border);stroke-width:3}
+.surah-actions .download-btn .progress-ring .fg{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .1s}
+.surah-actions .download-btn .progress-text{position:absolute;font-size:calc(.5rem*var(--text-scale));font-weight:700;color:var(--text);text-align:center;line-height:1;pointer-events:none;font-family:var(--font-ui)}
+.surah-actions .download-btn .cancel-icon{position:absolute;top:-0.2rem;right:-0.2rem;font-size:calc(.6rem*var(--display-scale));color:#e74c3c;background:var(--bg-card);border-radius:50%;width:calc(1rem*var(--display-scale));height:calc(1rem*var(--display-scale));display:flex;align-items:center;justify-content:center;border:1px solid #e74c3c;cursor:pointer;transition:all .15s;z-index:2}
+.surah-actions .download-btn .cancel-icon:active{transform:scale(.85)}
+.surah-actions .download-btn.downloaded{opacity:1;color:var(--gold)}
+.surah-actions .download-btn.downloading{opacity:1;color:var(--gold)}
+.surah-actions .download-btn.unavailable{opacity:.3;pointer-events:none;color:var(--text-secondary)}
+.surah-actions .download-btn.verify-pending{opacity:.6;color:var(--gold);animation:pulse 1.5s infinite}
+.surah-actions .download-btn.not-exist{opacity:.3;pointer-events:none;color:var(--text-secondary)}
+.surah-status-row{display:none;align-items:center;gap:calc(.5rem*var(--display-scale));padding-right:calc(2.4rem*var(--display-scale)+.6rem*var(--display-scale));padding-top:calc(.2rem*var(--display-scale));min-height:calc(1.6rem*var(--display-scale));flex-wrap:wrap;animation:fadeIn .3s ease}
+.surah-status-row .checking-spinner{display:none;width:calc(.9rem*var(--display-scale));height:calc(.9rem*var(--display-scale));border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.surah-status-row .checking-spinner.show{display:inline-block}
+.surah-status-row .unavailability-badge{color:#e74c3c;font-size:calc(.65rem*var(--text-scale));background:rgba(231,76,60,0.1);padding:.05rem .6rem;border-radius:1rem;border:1px solid rgba(231,76,60,0.2);display:none;white-space:nowrap;font-weight:600}
+.surah-status-row .unavailability-badge.show{display:inline-block}
+.surah-status-row .warning-badge{color:#f39c12;font-size:calc(.65rem*var(--text-scale));background:rgba(243,156,18,0.1);padding:.05rem .6rem;border-radius:1rem;border:1px solid rgba(243,156,18,0.2);display:none;white-space:nowrap;font-weight:600}
+.surah-status-row .warning-badge.show{display:inline-block}
+.surah-status-row .retry-check-btn{background:var(--bg-card);border:1px solid var(--gold);color:var(--gold-dark);cursor:pointer;font-size:calc(.6rem*var(--text-scale));padding:.05rem .7rem;border-radius:1rem;transition:all .2s ease;display:none;align-items:center;gap:.3rem;font-family:var(--font-ui);font-weight:600;white-space:nowrap}
+.surah-status-row .retry-check-btn:hover{background:var(--gold);color:#fff;transform:translateY(-1px);box-shadow:0 2px 8px rgba(201,168,76,0.3)}
+.surah-status-row .retry-check-btn:active{transform:scale(.95)}
+.surah-status-row .retry-check-btn.show{display:inline-flex}
+.surah-status-row .retry-check-btn.checking{animation:spin 1s linear infinite;border-color:var(--gold-dark)}
+.surah-status-row .verify-progress{font-size:calc(.6rem*var(--text-scale));color:var(--text-secondary);display:none;align-items:center;gap:.3rem}
+.surah-status-row .verify-progress.show{display:inline-flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.empty-state{text-align:center;padding:2.5rem 0;color:var(--text-secondary)}
+.reader-view{display:none;position:fixed;inset:0;z-index:100;background:var(--bg);padding:0rem;overflow-y:auto;flex-direction:column}
+.reader-view.visible{display:flex}
+.reader-header{display:flex;align-items:center;min-height:4rem;gap:calc(.75rem*var(--display-scale));padding-bottom:calc(.75rem*var(--display-scale));border-bottom:1px solid var(--border);margin-bottom:calc(.75rem*var(--display-scale));position:sticky;top:0;background:var(--bg);z-index:2;flex-wrap:wrap}
+.reader-header .back-btn{background:0 0;border:none;font-size:calc(1.1rem*var(--display-scale));color:var(--text);cursor:pointer;padding:calc(.25rem*var(--display-scale)) calc(.5rem*var(--display-scale));border-radius:calc(.5rem*var(--display-scale))}
+.reader-header .back-btn:active{background:var(--border)}
+.reader-header .title{font-size:calc(var(--fs-large)*var(--text-scale));font-weight:700;flex:1;min-width:4rem;text-align:center}
+.reader-header .font-ctrl{display:flex;gap:calc(.3rem*var(--display-scale))}
+.reader-header .font-ctrl button{background:var(--bg-card);border:1px solid var(--border);border-radius:calc(1.25rem*var(--display-scale));padding:.1rem .6rem;font-size:1rem;cursor:pointer;color:var(--text);font-family:var(--font-ui)}
+.reader-header .font-ctrl button:active{background:var(--border)}
+.reader-header .font-ctrl .search-toggle-btn{background:var(--bg-card);border:1px solid var(--border);border-radius:calc(1.25rem*var(--display-scale));padding:.1rem .6rem;font-size:1rem;cursor:pointer;color:var(--text);font-family:var(--font-ui);transition:all 0.15s}
+.reader-header .font-ctrl .search-toggle-btn:hover{border-color:var(--gold);color:var(--gold)}
+.reader-header .font-ctrl .search-toggle-btn:active{background:var(--border)}
+.reader-search-container{display:none;align-items:center;gap:0.5rem;padding:0.2rem 0.5rem;background:var(--bg-card);border-radius:1.5rem;border:1px solid var(--border);flex:1;max-width:300px;margin-right:0.5rem;animation:fadeIn 0.25s ease}
+.reader-search-wrapper{display:flex;align-items:center;gap:0.3rem;width:100%}
+.reader-search-wrapper .reader-search-input{flex:1;border:none;background:transparent;color:var(--text);font-family:var(--font-ui);font-size:0.85rem;padding:0.2rem 0.5rem;outline:none;direction:rtl}
+.reader-search-wrapper .reader-search-input::placeholder{color:var(--text-secondary);opacity:0.7}
+.reader-search-wrapper button{background:transparent;border:none;color:var(--text-secondary);cursor:pointer;padding:0.2rem 0.4rem;font-size:0.9rem;transition:all 0.2s}
+.reader-search-wrapper button:hover{color:var(--gold)}
+.reader-search-wrapper .reader-search-count{font-size:0.7rem;color:var(--text-secondary);min-width:2.5rem;text-align:center;font-family:var(--font-ui)}
+.search-highlight{background:rgba(201,168,76,0.15)!important;border-radius:0.25rem}
+.search-current{background:rgba(201,168,76,0.35)!important;border-radius:0.25rem;border-right:3px solid var(--gold)}
+.reader-ayah{font-family:var(--font-family);font-size:calc(clamp(17px,1.15rem,22px)*var(--text-scale));line-height:calc(2.2*var(--display-scale));padding:calc(.3rem*var(--display-scale)) calc(.25rem*var(--display-scale));border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:calc(.5rem*var(--display-scale));transition:background .1s}
+.reader-ayah .ayah-num{font-family:var(--font-ui);font-size:calc(var(--fs-xsmall)*var(--text-scale));background:var(--gold);color:#fff;width:calc(1.5rem*var(--display-scale));height:calc(1.5rem*var(--display-scale));border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.25rem}
+.reader-ayah .ayah-text{flex:1;cursor:pointer;user-select:text;-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text}
+.reader-ayah .ayah-text:active{background:rgba(201,168,76,.08);border-radius:.25rem}
+.reader-ayah .ayah-actions{display:flex;gap:calc(.2rem*var(--display-scale));flex-shrink:0;margin-top:.25rem}
+.reader-ayah .ayah-actions button{background:0 0;border:none;color:var(--text-secondary);font-size:calc(var(--fs-xsmall)*var(--text-scale));cursor:pointer;padding:.1rem .3rem;border-radius:.25rem;transition:background .1s}
+.reader-ayah .ayah-actions button:active{background:var(--border)}
+.reader-ayah .ayah-actions{color:var(--gold-dark);font-size:1.5rem}
+.share-ayah-btn { display: none !important; }
+.tafsir-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.25rem;pointer-events:auto;transition:opacity 0.25s ease,visibility 0.25s ease;opacity:0;visibility:hidden}
+.tafsir-modal.show{display:flex;opacity:1;visibility:visible}
+.tafsir-modal .tafsir-content{background:var(--bg-card);border-radius:var(--radius);padding:calc(1.5rem*var(--display-scale));max-width:30rem;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.3);color:var(--text);pointer-events:auto;transition:transform 0.25s ease,opacity 0.25s ease;transform:scale(0.95);opacity:0}
+.tafsir-modal.show .tafsir-content{transform:scale(1);opacity:1}
+.tafsir-content h3{font-size:calc(1rem*var(--text-scale));margin-bottom:.5rem;color:var(--gold-dark)}
+.tafsir-content p{line-height:1.8;font-size:calc(.95rem*var(--text-scale));white-space:pre-wrap}
+.tafsir-content .close-btn{margin-top:1rem;padding:.5rem 1.25rem;background:var(--gold);border:none;border-radius:calc(1.25rem*var(--display-scale));color:#fff;font-family:var(--font-ui);font-weight:600;cursor:pointer;font-size:calc(.85rem*var(--text-scale))}
+.tafsir-content .close-btn:active{transform:scale(.95)}
+.bottom-player{position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--bg-card);border-top:1px solid var(--border);border-radius:32px 32px 0 0;margin:0 12px;padding:16px 20px 20px;padding-bottom:max(20px,env(safe-area-inset-bottom));box-shadow:0 -12px 60px rgba(0,0,0,0.15);transition:all 1.2s cubic-bezier(0.34,1.8,0.64,1);transform:translateY(calc(100%+20px)) scale(0.9);opacity:0;width:auto;will-change:transform,opacity;display:none;transform-origin:bottom center}
+.bottom-player.visible{transform:translateY(0) scale(1);display:block;opacity:1}
+.dark .bottom-player{background:rgba(26,26,26,0.95);border-top:1px solid rgba(255,255,255,0.05);box-shadow:0 -12px 60px rgba(0,0,0,0.5)}
+.player-inner{display:flex;flex-direction:column;gap:16px}
+.player-top-row{display:flex;align-items:center;gap:16px;direction:rtl}
+.player-cover{width:60px;height:60px;border-radius:16px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;flex-shrink:0;box-shadow:0 4px 20px rgba(201,168,76,0.3)}
+.player-details{flex:1;min-width:0}
+.player-details .title{font-size:1.2rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-details .subtitle{font-size:0.85rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-fav-btn{background:0 0;border:none;font-size:1.5rem;color:var(--text-secondary);cursor:pointer;padding:8px;transition:all 0.2s;flex-shrink:0}
+.player-fav-btn.active{color:var(--gold)}
+.player-row-main{display:flex;align-items:center;justify-content:center;gap:20px;direction:ltr}
+.player-row-main .ctrl-btn{background:transparent;border:none;color:var(--text-secondary);font-size:26px;cursor:pointer;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;position:relative}
+.player-row-main .play-btn{width:72px;height:72px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#fff;border-radius:50%;font-size:32px;box-shadow:0 8px 32px rgba(201,168,76,0.4);transition:all 0.25s ease}
+.player-row-main .stop-btn{color:var(--gold-dark);font-size:26px}
+.player-info{display:none}
+.player-progress-wrap{display:flex;align-items:center;gap:20px;width:100%;margin:4px 0;direction:ltr}
+.player-progress-wrap .time{font-size:calc(var(--fs-small)*var(--text-scale));color:var(--text-secondary);font-variant-numeric:tabular-nums;min-width:48px;display:inline-block}
+.player-progress-wrap .time.current{text-align:left}
+.player-progress-wrap .time.duration{text-align:right}
+.player-progress-wrap .progress-track{flex:1;height:10px;background:var(--border);border-radius:10px;position:relative;cursor:pointer;min-width:0;transition:height 0.2s}
+.player-progress-wrap .progress-track:hover{height:14px}
+.player-progress-wrap .progress-track .fill{height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold));border-radius:10px;width:0;transition:width 0.1s linear;position:relative}
+.player-progress-wrap .progress-track .fill::after{content:'';position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:var(--gold);border-radius:50%;box-shadow:0 0 16px rgba(201,168,76,0.5);opacity:0;transition:opacity 0.2s}
+.player-progress-wrap .progress-track:hover .fill::after{opacity:1}
+.player-row-extras{display:flex;align-items:center;gap:16px;margin-top:6px;justify-content:center;direction:ltr;flex-wrap:wrap;padding:0 4px}
+.volume-wrap{display:flex;align-items:center;gap:10px;color:var(--text-secondary);font-size:calc(.9rem*var(--text-scale))}
+.volume-wrap input[type=range]{width:80px;height:4px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:4px;outline:none;transition:background 0.2s}
+.volume-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 2px 8px rgba(201,168,76,0.3);border:2px solid var(--bg-card);transition:all 0.2s}
+.volume-wrap input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.volume-wrap input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid var(--bg-card)}
+button.extra-btn{background:rgba(201,168,76,0.08)!important;border:1.5px solid var(--gold)!important;border-radius:30px!important;padding:6px 16px!important;font-size:calc(var(--fs-small)*var(--text-scale))!important;font-weight:600!important;color:var(--gold-dark)!important;font-family:var(--font-ui)!important;cursor:pointer!important;transition:all 0.2s ease!important;display:inline-flex!important;align-items:center!important;gap:6px!important;white-space:nowrap!important;line-height:1.4!important;min-width:unset!important;box-shadow:0 2px 6px rgba(0,0,0,0.03)!important}
+button.extra-btn:active{background:var(--gold)!important;color:#fff!important}
+button.extra-btn:hover{background:rgba(201,168,76,0.15)!important}
+button.extra-btn.active{background:var(--gold)!important;color:#fff!important;border-color:var(--gold-dark)!important}
+.welcome-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:300;display:flex;align-items:center;justify-content:center;padding:1.25rem}
+.welcome-modal.hidden{display:none}
+.welcome-content{background:var(--bg-card);border-radius:var(--radius);padding:calc(1.75rem*var(--display-scale)) calc(1.5rem*var(--display-scale));max-width:26rem;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.25);color:var(--text);text-align:center}
+.welcome-content h2{font-family:var(--font-family);font-size:calc(var(--fs-large)*var(--text-scale));color:var(--gold-dark);margin-bottom:.25rem}
+.welcome-content .reader-count{color:var(--text-secondary);font-size:calc(.85rem*var(--text-scale));margin-bottom:1rem}
+.welcome-content .reader-count span{font-weight:700;color:var(--gold-dark)}
+.welcome-content .steps{display:flex;flex-direction:column;align-items:center;font-size:calc(.8rem*var(--text-scale));line-height:2.2;margin-bottom:1.25rem}
+.welcome-content .steps i{color:var(--gold);width:1.5rem;text-align:center;margin-left:.3rem}
+.welcome-content .btn-enter{padding:.75rem 2.5rem;background:var(--gold);border:none;border-radius:calc(1.875rem*var(--display-scale));color:#fff;font-family:var(--font-ui);font-weight:700;font-size:calc(1rem*var(--text-scale));cursor:pointer;transition:transform .1s}
+.welcome-content .btn-enter:active{transform:scale(.95)}
+.welcome-content .welcome-footer{font-size:calc(.75rem*var(--text-scale));color:var(--text-secondary);direction:ltr;margin-top:1.5rem}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.9);padding:0.6rem 1.4rem;border-radius:1.2rem;font-size:calc(var(--fs-base)*0.7*var(--text-scale));font-weight:600;z-index:250;opacity:0;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,0.15);max-width:90%;text-align:center;line-height:1.6;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);color:#fff;min-width:120px}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards}
+@keyframes toastIn{0%{transform:translate(-50%,-50%) scale(0.7);opacity:0}60%{transform:translate(-50%,-50%) scale(1.05);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.toast.hiding{animation:toastOut 0.2s ease forwards}
+@keyframes toastOut{0%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(0.85);opacity:0}}
+.toast.default{background:var(--gold)}
+.dark .toast.default{background:var(--gold-dark)}
+.toast .toast-line{display:block;width:100%;font-size:calc(var(--fs-small)*0.7*var(--text-scale))}
+.toast .toast-btn{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:calc(1.6rem*var(--display-scale));height:calc(1.6rem*var(--display-scale));cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:calc(0.7rem*var(--text-scale));flex-shrink:0;margin-top:0.2rem}
+.toast .toast-btn:active{transform:scale(.9)}
+.loading-spinner{display:inline-block;width:calc(1.25rem*var(--display-scale));height:calc(1.25rem*var(--display-scale));border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;will-change:transform}
+@keyframes spin{to{transform:rotate(360deg)}}
+.side-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:70;display:none}
+.side-menu-overlay.show{display:block}
+.side-menu{position:fixed;top:0;right:-100%;bottom:0;width:75%;max-width:18rem;background:var(--bg-card);z-index:80;transition:right .3s cubic-bezier(.2,0,0,1);box-shadow:-4px 0 24px rgba(0,0,0,.12);padding:calc(1.25rem*var(--display-scale)) calc(1rem*var(--display-scale));overflow-y:auto;border-left:1px solid var(--border)}
+.side-menu.open{right:0}
+.side-menu .menu-header{font-family:var(--font-family);font-size:calc(var(--fs-large)*var(--text-scale));color:var(--gold-dark);padding-bottom:.75rem;border-bottom:1px solid var(--border);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.side-menu .menu-header .close-menu{background:0 0;border:none;font-size:calc(1.2rem*var(--display-scale));color:var(--text-secondary);cursor:pointer;padding:.25rem}
+.side-menu .menu-item{padding:calc(.7rem*var(--display-scale)) calc(.5rem*var(--display-scale));border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:calc(.75rem*var(--display-scale));font-size:calc(var(--fs-base)*var(--text-scale));color:var(--text);transition:background .1s;border-radius:.4rem}
+.side-menu .menu-item:active{background:var(--border)}
+.side-menu .menu-item i{width:1.25rem;text-align:center;color:var(--gold-dark)}
+.side-menu .menu-divider{height:1px;background:var(--border);margin:.5rem 0}
+.side-menu .menu-footer{margin-top:1.5rem;padding-top:.75rem;border-top:1px solid var(--border);font-size:calc(.6rem*var(--text-scale));color:var(--text-secondary);text-align:center;direction:ltr}
+.customize-toggle{cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.customize-toggle .customize-arrow{transition:transform 0.3s ease}
+.customize-toggle.open .customize-arrow{transform:rotate(180deg)}
+.customize-content{max-height:0;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.34,1.56,0.64,1);padding:0 0.5rem}
+.customize-content.open{max-height:800px;padding:0.5rem 0.5rem 1rem}
+.customize-item{padding:0.5rem 0;border-bottom:1px solid var(--border)}
+.customize-item:last-child{border-bottom:none}
+.customize-label{display:block;font-size:calc(var(--fs-small)*var(--text-scale));color:var(--text-secondary);margin-bottom:0.3rem;font-weight:600}
+.color-picker-row{display:grid;grid-template-columns:repeat(5,1fr);gap:0.5rem;padding:0.3rem 0;justify-items:center}
+.color-picker-row .color-dot{width:calc(2rem*var(--display-scale));height:calc(2rem*var(--display-scale));border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border 0.2s,transform 0.15s;flex-shrink:0}
+.color-picker-row .color-dot:hover{transform:scale(1.1)}
+.color-picker-row .color-dot.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg-card),0 0 0 4px var(--text)}
+.theme-row{display:flex;gap:.5rem;padding:.2rem 0}
+.theme-row button{flex:1;padding:calc(.4rem*var(--display-scale)) calc(.5rem*var(--display-scale));border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);color:var(--text);font-family:var(--font-ui);font-size:calc(var(--fs-base)*var(--text-scale));cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center;gap:.3rem}
+.theme-row button:active{transform:scale(.95)}
+.theme-row button.active{border-color:var(--gold);background:rgba(201,168,76,.15);color:var(--gold-dark)}
+.size-control{display:flex;gap:.5rem;align-items:center;justify-content:center;padding:.2rem 0}
+.size-control button{padding:.2rem .8rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);cursor:pointer;font-size:calc(var(--fs-base)*var(--text-scale));color:var(--text);transition:all .15s;font-family:var(--font-ui)}
+.size-control button:active{background:var(--border)}
+.size-control span{min-width:3rem;text-align:center;font-size:calc(var(--fs-base)*var(--text-scale));font-weight:600;color:var(--text)}
+.custom-select-wrapper{position:relative;width:100%}
+.custom-select-trigger{width:100%;padding:.5rem 2rem .5rem .8rem;border:2px solid var(--gold);border-radius:var(--radius);background-color:var(--bg-card);color:var(--text);font-family:var(--font-ui);font-size:calc(var(--fs-base)*var(--text-scale));font-weight:500;cursor:pointer;text-align:right;position:relative;transition:all .2s ease;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.custom-select-trigger::after{content:'';position:absolute;left:.8rem;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--gold)}
+.custom-select-options{position:absolute;top:calc(100%+4px);left:0;right:0;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:90;max-height:12rem;overflow-y:auto;display:none}
+.custom-select-options.open{display:block}
+.custom-select-option{padding:.55rem .8rem;cursor:pointer;font-family:var(--font-ui);font-size:calc(var(--fs-base)*var(--text-scale));color:var(--text);border-bottom:1px solid var(--border);transition:background .15s}
+.custom-select-option:last-child{border-bottom:none}
+.custom-select-option:hover,.custom-select-option:active{background:rgba(201,168,76,.12)}
+.custom-select-option.selected{background:var(--gold)!important;color:#fff!important;font-weight:700;border-radius:0.3rem}
+.dark .custom-select-option.selected{background:var(--gold)!important;color:#fff!important}
+#installModalClose,
+#helpClose,
+#sleepTimerClose,
+.tafsir-content .close-btn,
+.modal-box .close-btn,
+.btn-close-modal {
+    display:inline-block!important;
+    padding:.6rem 2rem!important;
+    background:var(--gold)!important;
+    border:none!important;
+    border-radius:2rem!important;
+    color:#fff!important;
+    font-family:var(--font-ui)!important;
+    font-weight:700!important;
+    font-size:calc(.95rem * var(--text-scale))!important;
+    cursor:pointer!important;
+    transition:all .15s ease!important;
+    box-shadow:0 2px 12px rgba(201,168,76,.3)!important;
+    margin-top:.5rem!important;
+    min-width:unset!important;
+    width:auto!important;
+}
+#installModalClose:active,
+#helpClose:active,
+#sleepTimerClose:active,
+.tafsir-content .close-btn:active,
+.modal-box .close-btn:active,
+.btn-close-modal:active {
+    background:var(--gold-dark)!important;
+}
+.fixed-footer{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--bg-card);border-top:1px solid var(--border);padding:.5rem 0;text-align:center;font-size:calc(var(--fs-small)*var(--text-scale));color:var(--text-secondary);direction:ltr;transition:background var(--transition),border var(--transition)}
+.fixed-footer a{color:var(--gold-dark);text-decoration:none;font-weight:600}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+.dark .search-wrapper{background:var(--bg-card);border-color:var(--border)}
+.dark .search-wrapper .search-main-input{color:var(--text)}
+.dark .reader-search-results{background:var(--bg-card);border-color:var(--border)}
+.dark .reader-search-item{color:var(--text)}
+.dark .modal-box{background:var(--bg-card);color:var(--text)}
+.dark .modal-box .modal-list .modal-item{border-color:var(--border)}
+.dark .tafsir-content{background:var(--bg_card);color:var(--text)}
+.dark .tafsir-content h3{color:var(--gold-light)}
+.dark .help-content .help-item{background:var(--bg)}
+.dark .custom-select-option{color:var(--text)}
+.dark .custom-select-trigger{background-color:var(--bg-card);color:var(--text)}
+.dark .bottom-player{background:var(--bg-card);border-color:var(--border)}
+.dark .fixed-footer{background:var(--bg-card);border-color:var(--border)}
+.dark .tafsir-modal{background:rgba(0,0,0,0.8)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
+.dark .tafsir-content{background:var(--bg-card)!important;border:1px solid var(--border)!important;box-shadow:0 12px 40px rgba(0,0,0,0.6)!important}
+.dark .modal-box{background:var(--bg-card)!important;border:1px solid var(--border)!important;box-shadow:0 12px 40px rgba(0,0,0,0.6)!important}
+.dark .custom-alert-overlay{background:rgba(0,0,0,0.75)!important;backdrop-filter:blur(8px)!important}
+.dark .custom-alert-box{background:var(--bg-card)!important;border:1px solid var(--border)!important;box-shadow:0 12px 40px rgba(0,0,0,0.6)!important}
+.dark .side-menu{background:var(--bg-card)!important;border-left:1px solid var(--border)!important;box-shadow:-4px 0 24px rgba(0,0,0,0.3)!important}
+.dark .resume-item{background:var(--bg)!important;border:1px solid var(--border)!important;border-radius:var(--radius)!important;padding:0.5rem!important}
+.dark .reader-dropdown-menu{background:var(--bg-card)!important;border:1px solid var(--border)!important;box-shadow:0 8px 24px rgba(0,0,0,0.4)!important}
+.dark .reader-search-results{background:var(--bg-card)!important;border:1px solid var(--border)!important;box-shadow:0 8px 24px rgba(0,0,0,0.4)!important}
+.dark .custom-select-options{background:var(--bg-card)!important;border:1px solid var(--border)!important;box-shadow:0 8px 24px rgba(0,0,0,0.4)!important}
+.dark .toast{background:var(--gold-dark)!important;box-shadow:0 8px 40px rgba(0,0,0,0.5)!important}
+.dark .tafsir-content .close-btn,.dark .modal-box .close-btn,.dark .btn-close-modal{box-shadow:0 2px 12px rgba(0,0,0,0.4)!important}
+.dark .help-content .help-item{background:var(--bg)!important;border:1px solid var(--border)!important}
+.dark .reset-checkbox-label{background:var(--bg)!important;border:1px solid var(--border)!important;border-radius:var(--radius)!important}
+.dark .selection-item{background:var(--bg)!important;border:1px solid var(--border)!important}
+.resume-item{text-align:right;margin:.5rem 0}
+.resume-item div{margin-bottom:.4rem;font-size:calc(var(--fs-base)*var(--text-scale))}
+.resume-btn{background:var(--gold);color:#fff;border:none;padding:.4rem 1rem;border-radius:1.5rem;font-family:var(--font-ui);font-size:calc(var(--fs-small)*var(--text-scale));cursor:pointer;display:inline-flex;align-items:center;gap:.3rem}
+.resume-ignore-btn{background:var(--border);color:var(--text);border:none;padding:.4rem 1rem;border-radius:1.5rem;font-family:var(--font-ui);font-size:calc(var(--fs-small)*var(--text-scale));cursor:pointer}
+.reset-checkbox-label{display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.4rem .6rem;border-radius:.4rem;transition:background .1s;font-size:calc(var(--fs-base)*var(--text-scale))}
+.reset-checkbox-label:hover{background:rgba(201,168,76,.08)}
+.reset-checkbox-label input[type=checkbox]{width:calc(1.2rem*var(--display-scale));height:calc(1.2rem*var(--display-scale));cursor:pointer;accent-color:var(--gold)}
+#captchaCode{font-size:calc(2.5rem*var(--text-scale));font-weight:700;color:var(--gold-dark);background:var(--bg);padding:.5rem;border-radius:.5rem;margin:.5rem 0;font-family:'Courier New',monospace;letter-spacing:4px;direction:ltr;text-align:center}
+#captchaInput{width:100%;padding:.5rem 1rem;border:2px solid var(--border);border-radius:.5rem;background:var(--bg-card);color:var(--text);font-size:calc(1.2rem*var(--text-scale));text-align:center;font-family:'Courier New',monospace;direction:ltr;outline:none;margin:.5rem 0}
+#captchaInput:focus{border-color:var(--gold)}
+.reset-actions-bar{display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap}
+.reset-actions-bar button{padding:.5rem 1.5rem;border:none;border-radius:1.5rem;font-family:var(--font-ui);font-weight:600;font-size:calc(.85rem*var(--text-scale));cursor:pointer;transition:all .15s}
+.reset-actions-bar button:active{transform:scale(.95)}
+.btn-cancel{background:var(--border);color:var(--text)}
+.btn-cancel:hover{background:#d0c8c0}
+.btn-danger{background:#e74c3c;color:#fff}
+.btn-danger:hover{background:#c0392b}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:var(--gold-dark)}
+#verifyError{color:#e74c3c;font-size:calc(.8rem*var(--text-scale));margin-top:.5rem;display:none}
+.selection-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;max-height:350px;overflow-y:auto;padding:1rem;margin:1rem 0;background:var(--bg);border-radius:var(--radius)}
+.selection-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;border-radius:.5rem;cursor:pointer;font-size:calc(var(--fs-base)*var(--text-scale));border:1px solid transparent;transition:all .15s}
+.selection-item:hover{background:rgba(201,168,76,.1);border-color:var(--border)}
+.selection-item input[type=checkbox]{width:calc(1.1rem*var(--display-scale));height:calc(1.1rem*var(--display-scale));accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+.selection-item .unavailable-label{color:#e74c3c;font-size:.65rem;opacity:.7}
+.selection-item.downloaded-item{opacity:.55;cursor:default}
+.selection-item.downloaded-item input[type=checkbox]{cursor:default}
+.selection-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;padding:.3rem .2rem}
+.selection-header .reader-name{font-size:calc(1rem*var(--text-scale));font-weight:700;color:var(--gold-dark)}
+.selection-header .count{font-size:calc(.9rem*var(--text-scale));color:var(--text-secondary);background:var(--bg);padding:.2rem .8rem;border-radius:1.5rem}
+.selection-header .count strong{color:var(--gold-dark)}
+.selection-actions{display:flex;gap:.8rem;flex-wrap:wrap;margin:.5rem 0 1.1rem 0}
+.selection-actions button{padding:.3rem 1.2rem;border:none;border-radius:1.5rem;font-size:calc(var(--fs-small)*var(--text-scale));font-family:var(--font-ui);font-weight:600;cursor:pointer;transition:all .15s}
+.selection-actions .sel-select-all{background:var(--gold);color:#fff}
+.selection-actions .sel-select-all:hover{background:var(--gold-dark)}
+.selection-actions .sel-deselect-all{background:var(--border);color:var(--text)}
+.selection-actions .sel-deselect-all:hover{background:#d0c8c0}
+.selection-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:1.1rem;padding-top:1.1rem;border-top:2px solid var(--border)}
+.selection-footer .size-info{font-size:calc(.95rem*var(--text-scale));color:var(--text-secondary);background:var(--bg);padding:.3rem 1rem;border-radius:1.5rem}
+.selection-footer .size-info strong{color:var(--gold-dark)}
+.selection-footer .reset-actions-bar{margin:0}
+#surahSelectionModal .tafsir-content{max-width:36rem;padding:1.8rem}
+#surahSelectionModal h3{font-size:calc(1.2rem*var(--text-scale));margin-bottom:.8rem;text-align:center}
+.download-progress-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);z-index:250;display:none;align-items:center;justify-content:center;padding:1.25rem}
+.download-progress-overlay.show{display:flex}
+.download-progress-overlay .progress-box{background:var(--bg-card);border-radius:var(--radius);padding:calc(1.75rem*var(--display-scale));max-width:28rem;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3);color:var(--text);text-align:center}
+.download-progress-overlay .progress-box .title{font-size:calc(1.1rem*var(--text-scale));font-weight:700;color:var(--gold-dark);margin-bottom:.6rem}
+.download-progress-overlay .progress-box .reader-name{font-size:calc(.9rem*var(--text-scale));color:var(--text-secondary);margin-bottom:1rem}
+.download-progress-overlay .progress-box .stats{display:flex;justify-content:space-around;font-size:calc(.85rem*var(--text-scale));margin:.8rem 0}
+.download-progress-overlay .progress-box .stats span{color:var(--text-secondary)}
+.download-progress-overlay .progress-box .stats strong{color:var(--text)}
+.download-progress-overlay .progress-box .main-bar{height:8px;background:var(--border);border-radius:8px;overflow:hidden;margin:.6rem 0 1.2rem}
+.download-progress-overlay .progress-box .main-bar .fill{height:100%;background:var(--gold);border-radius:8px;width:0;transition:width .3s}
+.download-progress-overlay .progress-box .surah-info{font-size:calc(.9rem*var(--text-scale));margin:.6rem 0 .5rem;color:var(--text-secondary)}
+.download-progress-overlay .progress-box .surah-info strong{color:var(--text)}
+.download-progress-overlay .progress-box .surah-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin:.4rem 0}
+.download-progress-overlay .progress-box .surah-bar .fill{height:100%;background:var(--gold-light);border-radius:4px;width:0;transition:width .3s}
+.download-progress-overlay .progress-box .surah-progress-text{font-size:calc(.7rem*var(--text-scale));color:var(--text-secondary);margin-bottom:.6rem}
+.download-progress-overlay .progress-box .btn-group{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.download-progress-overlay .progress-box .btn-group button{padding:.5rem 1.5rem;border:none;border-radius:1.5rem;font-family:var(--font-ui);font-weight:600;font-size:calc(.85rem*var(--text-scale));cursor:pointer;transition:all .15s}
+.download-progress-overlay .progress-box .btn-group .back-btn{background:var(--border);color:var(--text)}
+.download-progress-overlay .progress-box .btn-group .cancel-btn{background:#e74c3c;color:#fff}
+.download-progress-overlay .progress-box .btn-group button:active{transform:scale(.95)}
+.download-confirm-modal .tafsir-content{max-width:24rem;text-align:center;padding:1.85rem 1.6rem}
+.download-confirm-modal h3{margin-bottom:1.3rem}
+.download-confirm-modal #dlConfirmInfo{margin-bottom:1.3rem}
+.download-confirm-modal .surah-name-display{font-size:calc(1.15rem*var(--text-scale));font-weight:700;color:var(--gold-dark);margin:.5rem 0 .4rem}
+.download-confirm-modal .reader-name-display{font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);margin-bottom:.6rem}
+.download-confirm-modal .size-display{font-size:calc(.9rem*var(--text-scale));margin:.8rem 0;color:var(--text)}
+.download-confirm-modal .multi-check-wrap{display:flex;align-items:center;justify-content:center;gap:.6rem;margin:1.3rem 0}
+.download-confirm-modal .multi-check-wrap input[type=checkbox]{width:calc(1rem*var(--display-scale));height:calc(1rem*var(--display-scale));accent-color:var(--gold);cursor:pointer}
+.download-confirm-modal .multi-check-wrap label{font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);cursor:pointer}
+.download-confirm-modal .multi-check-wrap .multi-hint{font-size:calc(.7rem*var(--text-scale));color:var(--text-secondary);display:block;margin-top:.2rem}
+.download-confirm-modal .reset-actions-bar{margin-top:1.3rem;gap:.7rem}
+.verify-modal .tafsir-content{max-width:24rem;text-align:center}
+.verify-modal .verify-message{font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);margin-bottom:.5rem}
+.verify-modal .verify-message strong{color:var(--gold-dark)}
+#verifyProgressModal .tafsir-content{max-width:32rem;padding:calc(1.8rem*var(--display-scale));border-radius:var(--radius);box-shadow:0 16px 48px rgba(0,0,0,0.2)}
+#verifyProgressModal h3{font-size:calc(1.15rem*var(--text-scale));color:var(--gold-dark);margin-bottom:0.8rem;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+#verifyProgressModal .progress-container{margin:1.2rem 0}
+#verifyProgressModal .progress-bar-bg{width:100%;height:8px;background:var(--border);border-radius:8px;overflow:hidden;margin:0.5rem 0}
+#verifyProgressModal .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold));border-radius:8px;width:0%;transition:width 0.4s ease}
+#verifyProgressModal .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin:0.8rem 0}
+#verifyProgressModal .stat-card{background:var(--bg);border-radius:var(--radius);padding:0.6rem;text-align:center}
+#verifyProgressModal .stat-card .number{font-size:calc(1.4rem*var(--text-scale));font-weight:700;color:var(--text)}
+#verifyProgressModal .stat-card .label{font-size:calc(.7rem*var(--text-scale));color:var(--text-secondary)}
+#verifyProgressModal .stat-card.available .number{color:#4caf50}
+#verifyProgressModal .stat-card.unavailable .number{color:#e74c3c}
+#verifyProgressModal .stat-card.downloaded .number{color:var(--gold-dark)}
+#verifyProgressModal .unavailable-list{text-align:right;font-size:calc(.8rem*var(--text-scale));color:#e74c3c;background:rgba(231,76,60,0.06);padding:0.6rem 1rem;border-radius:var(--radius);border-right:3px solid #e74c3c;max-height:160px;overflow-y:auto;margin-top:0.5rem;line-height:1.8}
+#verifyProgressModal .unavailable-list .surah-item{display:flex;justify-content:space-between;padding:0.1rem 0;border-bottom:1px solid rgba(231,76,60,0.08)}
+#verifyProgressModal .unavailable-list .surah-item:last-child{border-bottom:none}
+#verifyProgressModal .btn-gold{padding:0.6rem 2.5rem;border:none;border-radius:2rem;background:var(--gold);color:#fff;font-family:var(--font-ui);font-weight:700;font-size:calc(.95rem*var(--text-scale));cursor:pointer;transition:all 0.15s ease;box-shadow:0 2px 12px rgba(201,168,76,0.3);margin-top:0.5rem}
+#verifyProgressModal .btn-gold:active{transform:scale(0.95);background:var(--gold-dark)}
+@media(max-width:480px){.surah-card{padding:.5rem .5rem;min-height:calc(3.2rem*var(--display-scale))}.surah-number{width:2rem;height:2rem;font-size:var(--fs-small)}.surah-name{font-size:var(--fs-base)}.surah-actions button{font-size:calc(1.1rem*var(--display-scale));padding:.15rem .25rem}.surah-actions .download-btn{width:calc(1.8rem*var(--display-scale));height:calc(1.8rem*var(--display-scale));font-size:calc(1.1rem*var(--display-scale))}.surah-status-row{padding-right:calc(2rem+.6rem*var(--display-scale));padding-top:.15rem;gap:.3rem;min-height:calc(1.4rem*var(--display-scale))}.surah-status-row .unavailability-badge,.surah-status-row .warning-badge{font-size:calc(.55rem*var(--text-scale));padding:.05rem .4rem}.surah-status-row .retry-check-btn{font-size:calc(.5rem*var(--text-scale));padding:.05rem .5rem}.radio-row {margin-top:0.4rem;margin-bottom:0.2rem}.reader-ayah{font-size:clamp(15px,1rem,18px);line-height:2}.reader-header .title{font-size:var(--fs-base)}.bottom-player{margin:0 4px;padding:12px 14px 16px;border-radius:24px 24px 0 0}.player-cover{width:48px;height:48px;font-size:1.5rem}.player-details .title{font-size:0.95rem}.player-details .subtitle{font-size:0.7rem}.player-row-main .play-btn{width:56px;height:56px;font-size:24px}.player-row-main .ctrl-btn{width:40px;height:40px;font-size:18px}.volume-wrap input[type=range]{width:60px}.reader-dropdown-btn .selected-name{max-width:100%;font-size:var(--fs-base)}.reader-dropdown-btn .change-hint{font-size:.6rem;padding:.05rem .4rem}.radio-big-btn{padding:0.4rem 1rem;font-size:var(--fs-base);min-width:100px;width:100%}.welcome-content{padding:1.25rem 1rem}.welcome-content h2{font-size:var(--fs-large)}.side-menu{width:85%;max-width:16rem}button.extra-btn{font-size:var(--fs-xsmall)!important;padding:.15rem .6rem!important}.fixed-footer{font-size:var(--fs-xsmall)}.search-wrapper .search-target button{font-size:.85rem;padding:.15rem .45rem}.tafsir-content{max-width:100%;margin:.5rem;padding:1rem}#captchaCode{font-size:2rem}#captchaInput{font-size:1rem}.reset-actions-bar button{padding:.4rem 1rem;font-size:.75rem}.selection-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.4rem;padding:.5rem;max-height:250px}.selection-item{font-size:var(--fs-small);padding:.3rem .4rem}.selection-header{flex-direction:column;align-items:stretch;text-align:center}.selection-footer{flex-direction:column;align-items:stretch;text-align:center}.download-progress-overlay .progress-box{padding:1rem}#surahSelectionModal .tafsir-content{padding:1rem}}
+@media(max-width:380px){.surah-card{padding:.4rem .4rem;min-height:calc(2.8rem*var(--display-scale))}.surah-number{width:1.6rem;height:1.6rem;font-size:var(--fs-xsmall)}.surah-name{font-size:var(--fs-small)}.surah-actions button{font-size:calc(.9rem*var(--display-scale));padding:.1rem .2rem}.surah-actions .download-btn{width:calc(1.6rem*var(--display-scale));height:calc(1.6rem*var(--display-scale));font-size:calc(.9rem*var(--display-scale))}.surah-status-row{padding-right:calc(1.6rem+.4rem*var(--display-scale));padding-top:.1rem;gap:.2rem;min-height:calc(1.2rem*var(--display-scale))}.radio-big-btn{font-size:var(--fs-small);padding:.4rem .6rem}.selection-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}.bottom-player{padding:10px 10px 14px;margin:0 2px;border-radius:20px 20px 0 0}.player-cover{width:40px;height:40px;font-size:1.2rem}.player-row-main .play-btn{width:48px;height:48px;font-size:20px}.player-row-main .ctrl-btn{width:36px;height:36px;font-size:16px}}
+i[data-emoji]{font-style:normal!important}
+.install-modal .tafsir-content{max-width:24rem;text-align:center}
+.install-modal .install-options{display:flex;flex-direction:column;gap:.8rem;margin:1.2rem 0}
+.install-modal .install-options button{width:100%;padding:.7rem 1.5rem;border:none;border-radius:1.5rem;font-family:var(--font-ui);font-weight:600;font-size:calc(.95rem*var(--text-scale));cursor:pointer;transition:all .15s}
+.install-modal .install-options button:active{transform:scale(.95)}
+.install-modal .install-options .option-pwa{background:var(--gold);color:#fff}
+.install-modal .install-options .option-pwa:active{background:var(--gold-dark)}
+.install-modal .install-options .option-apk{background:var(--border);color:var(--text)}
+.install-modal .install-options .option-apk:active{background:#d0c8c0}
+.install-modal .install-options .option-disabled{opacity:.5;pointer-events:none}
+.install-modal .option-sub{display:block;font-size:.7rem;font-weight:400;opacity:.8}
+.install-modal .install-options ul{font-size:calc(.8rem*var(--text-scale));color:var(--text-secondary);line-height:2;list-style:none;padding:0;margin:.3rem 0 0 0;text-align:right}
+.install-modal .install-options ul li{font-size:calc(.8rem*var(--text-scale))}
+.help-content{text-align:right;padding:.5rem .5rem 0 .5rem;position:relative;max-height:70vh;overflow-y:auto}
+.help-content .btn-close-modal{position:sticky;bottom:0;left:0;right:0;width:100%;margin:0.5rem 0 0 0;z-index:10;box-shadow:0 -4px 12px rgba(0,0,0,0.1);border-radius:0;padding:1rem 2rem!important}
+.help-content h3{color:var(--gold-dark);margin:.5rem 0 .2rem;font-size:calc(1rem*var(--text-scale))}
+.help-content p{font-size:calc(.85rem*var(--text-scale));line-height:1.6;color:var(--text-secondary);margin-bottom:.3rem}
+.help-content .help-item{margin-bottom:.5rem;padding:.3rem .5rem;background:var(--bg);border-radius:var(--radius);font-size:calc(var(--fs-base)*var(--text-scale))}
+.help-content .help-item i{color:var(--gold);width:1.5rem;text-align:center}
+.help-content .help-item strong{font-size:calc(1rem*var(--text-scale))}
+.help-content input[type=checkbox]{width:calc(1.2rem*var(--display-scale));height:calc(1.2rem*var(--display-scale));accent-color:var(--gold);cursor:pointer}
+.help-dont-show-container{display:flex;align-items:center;gap:.5rem;margin-top:.5rem;padding-bottom:.5rem}
+.help-dont-show-container.hidden{display:none!important}
+.custom-alert-overlay.hidden{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;z-index:-1!important;position:fixed!important;inset:0!important}
+.custom-alert-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:1.25rem}
+.custom-alert-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:1.25rem}
+.custom-alert-overlay.hidden{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;z-index:-1!important}
+.custom-alert-box{background:var(--bg-card);border-radius:var(--radius);padding:calc(1.75rem*var(--display-scale));max-width:20rem;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.25);color:var(--text);text-align:center}
+.dark .custom-alert-box{background:var(--bg-card)!important;border:1px solid var(--border)!important;box-shadow:0 12px 40px rgba(0,0,0,0.6)!important}
+.custom-alert-box .alert-icon{font-size:2.5rem;color:var(--gold);margin-bottom:.5rem}
+.custom-alert-box .alert-message{font-size:calc(.95rem*var(--text-scale));margin-bottom:1.25rem;line-height:1.6;font-family:var(--font-ui)}
+.custom-alert-box .alert-buttons{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.custom-alert-box .alert-buttons button{padding:.5rem 1.5rem;border:none;border-radius:1.5rem;font-family:var(--font-ui);font-weight:600;font-size:calc(.85rem*var(--text-scale));cursor:pointer;transition:all .15s}
+.custom-alert-box .alert-buttons .alert-cancel{background:var(--border);color:var(--text)}
+.custom-alert-box .alert-buttons .alert-confirm{background:var(--gold);color:#fff}
+.custom-alert-box .alert-buttons button:active{transform:scale(.95)}
+.dark .custom-alert-overlay{background:rgba(0,0,0,0.75)!important;backdrop-filter:blur(8px)!important}
+.dark .custom-alert-box .alert-buttons .alert-cancel{background:var(--border);color:var(--text)}
+.dark .custom-alert-box .alert-buttons .alert-confirm{background:var(--gold-dark);color:#fff}
+.tafsir-modal .modal-box { background:var(--bg-card); border-radius:var(--radius); padding:calc(1.5rem * var(--display-scale)); max-width:28rem; width:100%; max-height:80vh; overflow-y:auto; box-shadow:0 12px 40px rgba(0,0,0,0.25); color:var(--text); border:1px solid var(--border); }
+.tafsir-modal .modal-box h3 { font-size:calc(1.1rem * var(--text-scale)); color:var(--gold-dark); text-align:center; margin-bottom:1rem; }
+.tafsir-modal .modal-box .modal-list { display:flex; flex-direction:column; gap:0.3rem; }
+.tafsir-modal .modal-box .modal-item { display:flex; align-items:center; justify-content:space-between; padding:0.6rem 0.8rem; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; border-radius:0.4rem; }
+.tafsir-modal .modal-box .modal-item:active { background:var(--border); }
+.tafsir-modal .modal-box .modal-item .item-name { flex:1; font-size:calc(var(--fs-base) * var(--text-scale)); }
+.tafsir-modal .modal-box .modal-item .item-action { color:var(--gold); font-size:calc(1rem * var(--display-scale)); }
+.tafsir-modal .modal-box .btn-close-modal { display:block!important; width:100%; margin-top:1rem; padding:0.6rem 2rem!important; background:var(--gold)!important; border:none!important; border-radius:2rem!important; color:#fff!important; font-family:var(--font-ui)!important; font-weight:700!important; font-size:calc(.95rem * var(--text-scale))!important; cursor:pointer!important; transition:all .15s ease!important; box-shadow:0 2px 12px rgba(201,168,76,.3)!important; }
+.tafsir-modal .modal-box .btn-close-modal:active { background:var(--gold-dark)!important; }
+.dark .tafsir-modal .modal-box { background:var(--bg-card)!important; border:1px solid var(--border)!important; box-shadow:0 12px 40px rgba(0,0,0,0.6)!important; }
+.sleep-controls { display:flex; flex-direction:column; align-items:center; gap:1rem; margin:1rem 0; }
+.sleep-controls .row { display:flex; gap:2.5rem; justify-content:center; flex-wrap:wrap; }
+.sleep-controls .col { display:flex; flex-direction:column; align-items:center; gap:0.2rem; }
+.sleep-controls .col .label { font-size:calc(.75rem * var(--text-scale)); color:var(--text-secondary); font-family:var(--font-ui); }
+.sleep-controls .col .value { font-size:calc(1.8rem * var(--text-scale)); font-weight:700; font-family:var(--font-ui); min-width:3rem; text-align:center; color:var(--text); direction:ltr; }
+.sleep-controls .col .arrow-btn { background:var(--bg-card); border:1px solid var(--border); border-radius:0.4rem; width:2rem; height:2rem; font-size:calc(1rem * var(--text-scale)); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text); transition:background 0.1s; }
+.sleep-controls .col .arrow-btn:active { background:var(--border); }
+.sleep-controls .col .arrow-btn:disabled { opacity:0.3; pointer-events:none; }
+.stats-btn.pulse{animation:pulse-stats 1.5s ease-in-out 3}
+.emoji-icon {font-style: normal !important;font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;}
+@keyframes pulse-stats{0%,100%{transform:scale(1)}50%{transform:scale(1.3);color:var(--gold)}}
+.tafsir-content .modal-list { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.8rem 0 1.2rem 0; }
+.tafsir-content .modal-item { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; border-radius: 0.4rem; transition: background 0.15s ease; min-height: 3.2rem; }
+.tafsir-content .modal-item:active { background: var(--border); }
+.tafsir-content .modal-item .item-name { flex: 1; font-size: calc(0.95rem * var(--text-scale)); font-weight: 500; line-height: 1.8; padding: 0.1rem 0.2rem; }
+.tafsir-content .modal-item .item-action { color: var(--gold); font-size: calc(1.1rem * var(--display-scale)); padding: 0.2rem 0.6rem; flex-shrink: 0; }
+#filterExplanation { background: var(--bg-card); border: 1px solid var(--gold); border-radius: var(--radius); padding: 0.3rem 0.7rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text); box-shadow: var(--shadow); transition: all 0.3s ease; line-height: 1.8; }
+@keyframes pulse-filter { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+</style>
+</head>
+<body>
+    <div class="app-bar">
+        <div class="app-bar-spacer"></div>
+        <div class="app-bar-center">
+            <span class="app-bar-title">القرآن الكريم</span>
+            <span class="network-indicator" id="networkIndicator">
+                <span class="network-status" id="networkStatus">🟢</span>
+            </span>
+            <div class="developer-info">برمجة: منجد أمهز</div>
+        </div>
+        <div class="app-bar-actions">
+            <span class="sleep-timer-indicator" id="sleepTimerIndicator" style="display:none;"><span id="sleepTimerDisplay">00:00</span></span>
+            <button id="sleepTimerBtn" title="مؤقت النوم"><i data-icon="hourglass-half"></i></button>
+            <button id="installAppBtn" title="تثبيت التطبيق"><i data-icon="download"></i></button>
+            <button id="menuToggle"><i data-icon="bars"></i></button>
+        </div>
+    </div>
+    <div class="main" id="mainApp">
+        <div class="reader-selector">
+    <div class="reader-selector-row">
+        <div class="reader-dropdown" id="readerDropdown">
+            <button class="reader-dropdown-btn" id="readerDropdownBtn">
+                <span class="stats-btn" id="statsBtn" title="إحصائيات القارئ">
+                    <i data-icon="chart-simple"></i>
+                </span>
+                <span class="fav-reader-star" id="favReaderStar" title="تفضيل القارئ"><i data-icon="star"></i></span>
+                <span class="selected-wrap"><span class="selected-name" id="selectedReaderName">عبد الباسط عبد الصمد</span></span>
+                <span class="arrow"><i data-icon="chevron-down"></i></span>
+            </button>
+            <div class="reader-dropdown-menu" id="readerDropdownMenu"><div id="readerList"></div></div>
+        </div>
+    </div>
+    <div class="radio-row">
+        <button class="radio-big-btn" id="radioBigBtn">
+            <i data-icon="broadcast"></i> راديو
+        </button>
+    </div>
+            <div class="verify-progress-bar" id="verifyProgressBar">
+                <span class="status" id="verifyProgressStatus">⏳ جاري التحقق...</span>
+                <span class="count" id="verifyProgressCount">0/114</span>
+                <div class="track"><div class="fill" id="verifyProgressFill"></div></div>
+                <button class="cancel-btn" id="cancelVerificationBtn" title="إلغاء التحقق">✕</button>
+                <button class="retry-all-btn" id="retryFailedBtn" style="display:none;">🔄 إعادة المحاولة</button>
+                <button class="verify-btn" id="manualVerifyBtn" style="display:none;">🔍 تحقق</button>
+            </div>
+            <div class="stats-tooltip" id="statsTooltip"></div>
+        </div>
+        <div class="search-wrapper" id="searchWrapper">
+            <div class="search-target">
+                <button id="searchTargetReaders" class="active">قراء</button>
+                <button id="searchTargetSurahs">سور</button>
+                <button id="searchTargetAyahs">آية</button>
+            </div>
+            <input type="text" class="search-main-input" id="searchMainInput" placeholder="ابحث..." />
+            <button class="search-clear-btn" id="searchClearBtn"><i data-icon="times"></i></button>
+            <div class="filter-wrapper">
+                <button class="filter-toggle-btn" id="filterToggleBtn">
+                    <i data-icon="filter"></i>
+                </button>
+                <div class="filter-dropdown" id="filterDropdown">
+                    <button class="filter-option active" data-filter="all">📋 الكل</button>
+                    <button class="filter-option" data-filter="available">✅ المتوفرة</button>
+                    <button class="filter-option" data-filter="unavailable">❌ غير المتوفرة</button>
+                    <button class="filter-option" data-filter="downloaded">⬇️ المُنزّلة</button>
+                    <button class="filter-option" data-filter="notdownloaded">📤 غير المُنزّلة</button>
+                </div>
+            </div>
+            <div class="reader-search-results" id="readerSearchResults"></div>
+        </div>
+        <div class="search-results-info" id="searchResultsInfo"></div>
+        <div id="filterExplanation" style="display:none; margin-bottom:0.8rem;"></div>
+        <div id="surahView"><div class="surah-grid" id="surahGrid"></div></div>
+    </div>
+    <div class="fixed-footer" id="fixedFooter">منجد أمهز © <span id="yearDisplay"></span> | الإصدار 3 | <a href="https://mamhaz.github.io/apps" target="_blank">mamhaz.github.io/apps</a></div>
+    <div class="bottom-player" id="bottomPlayer">
+        <div class="player-inner">
+            <div class="player-top-row">
+                <div class="player-cover"><i data-icon="quran"></i></div>
+                <div class="player-details">
+                    <div class="title" id="playerTitle">اختر سورة</div>
+                    <div class="subtitle" id="playerSubtitle"></div>
+                </div>
+                <button class="player-fav-btn" id="playerFavBtn"><i data-icon="heart"></i></button>
+            </div>
+            <div class="player-row-main" id="playerMainControls">
+                <button class="ctrl-btn" id="playerPrevBtn"><i data-icon="step-backward"></i></button>
+                <button class="ctrl-btn play-btn" id="playerPlayBtn"><i data-icon="play"></i></button>
+                <button class="ctrl-btn stop-btn" id="playerStopBtn"><i data-icon="stop"></i></button>
+                <button class="ctrl-btn" id="playerNextBtn"><i data-icon="step-forward"></i></button>
+                <span class="player-info" id="playerInfo"></span>
+            </div>
+            <div class="player-progress-wrap" id="playerProgressArea">
+                <span class="time current" id="playerTimeCur">00:00</span>
+                <div class="progress-track" id="playerProgress"><div class="fill" id="playerProgressFill"></div></div>
+                <span class="time duration" id="playerTimeDur">00:00</span>
+            </div>
+            <div class="player-row-extras" id="playerExtras">
+                <div class="volume-wrap">
+                    <i data-icon="volume-up"></i>
+                    <input type="range" id="volumeSliderInline" min="0" max="1" step="0.01" value="0.7" />
+                </div>
+                <button class="extra-btn" id="speedBtn">1x</button>
+                <button class="extra-btn" id="repeatBtn"><i data-icon="redo"></i> تكرار</button>
+            </div>
+        </div>
+    </div>
+    <div class="reader-view" id="readerView">
+        <div class="reader-header">
+            <button class="back-btn" id="readerBack"><i data-icon="arrow-right"></i></button>
+            <div class="title" id="readerTitle">سورة الفاتحة</div>
+            <div class="font-ctrl">
+                <button id="fontDec"><i data-icon="minus"></i></button>
+                <button id="fontInc"><i data-icon="plus"></i></button>
+                <button class="search-toggle-btn" id="readerSearchToggle" title="بحث في السورة"><i data-icon="search"></i></button>
+            </div>
+            <div class="reader-search-container" id="readerSearchContainer">
+                <div class="reader-search-wrapper">
+                    <input type="text" class="reader-search-input" id="readerSearchInput" placeholder="ابحث في السورة..." />
+                    <button id="readerSearchPrev" title="السابق"><i data-icon="chevron-up"></i></button>
+                    <button id="readerSearchNext" title="التالي"><i data-icon="chevron-down"></i></button>
+                    <span class="reader-search-count" id="readerSearchCount">0/0</span>
+                    <button id="readerSearchClear" title="إلغاء"><i data-icon="times"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="readerContent"></div>
+    </div>
+    <div class="tafsir-modal" id="tafsirModal">
+    <div class="tafsir-content">
+        <h3 id="tafsirTitle">تفسير الآية</h3>
+        <p id="tafsirText"></p>
+        <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;">
+            <button class="close-btn" id="tafsirClose">إغلاق</button>
+            <button class="close-btn" id="tafsirShareBtn" style="background:var(--gold-dark);"><i data-icon="share-alt"></i> مشاركة</button>
+        </div>
+    </div>
+</div>
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-content">
+            <h2><i data-icon="quran"></i> القرآن الكريم</h2>
+            <div class="reader-count"><i data-icon="microphone"></i> أكثر من <span id="readerCountDisplay">0</span> قارئ</div>
+            <div class="steps">
+                <div><i data-icon="microphone"></i> أكثر من ١٠٠ قارئ من مختلف أنحاء العالم الإسلامي</div>
+                <div><i data-icon="book-open"></i> مصحف كامل مع تفسير الميزان آية بآية</div>
+                <div><i data-icon="download"></i> نزّل السور واستمع دون إنترنت</div>
+                <div><i data-icon="palette"></i> خصّص التطبيق بالخطوط والألوان والوضع المظلم</div>
+                <div><i data-icon="hourglass-half"></i> مؤقت نوم شامل يعمل على السور والراديو</div>
+            </div>
+            <button class="btn-enter" id="welcomeEnter"><i data-icon="sign-in-alt"></i> دخول</button>
+            <div class="welcome-footer">برمجة المطور: <a href="https://mamhaz.github.io/apps" target="_blank" style="color:var(--gold-dark);text-decoration:none;font-weight:600;">منجد أمهز</a> © <span id="welcomeYearDisplay"></span></div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="custom-alert-overlay hidden" id="customAlert">
+        <div class="custom-alert-box">
+            <div class="alert-icon"><i data-icon="exclamation-triangle"></i></div>
+            <div class="alert-message" id="alertMessage"></div>
+            <div class="alert-buttons">
+                <button class="alert-cancel" id="alertCancel">إلغاء</button>
+                <button class="alert-confirm" id="alertConfirm">تأكيد</button>
+            </div>
+        </div>
+    </div>
+    <div class="side-menu-overlay" id="sideMenuOverlay"></div>
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <span><i data-icon="bars"></i> القائمة</span>
+            <button class="close-menu" id="sideMenuClose"><i data-icon="times"></i></button>
+        </div>
+        <div class="menu-item" id="menuFavReaders"><i data-icon="star"></i> مفضلة القراء</div>
+        <div class="menu-item" id="menuFavSurahs"><i data-icon="bookmark"></i> مفضلة السور</div>
+        <div class="menu-item" id="menuVerifySurahs"><i data-icon="shield-alt"></i> التحقق من السور</div>
+        <div class="menu-item" id="menuResetApp"><i data-icon="redo-alt"></i> إعادة تعيين التطبيق</div>
+        <div class="menu-item" id="menuShareApp"><i data-icon="share-alt"></i> مشاركة التطبيق</div>
+        <div class="menu-item" id="menuHelp"><i data-icon="question-circle"></i> التعليمات</div>
+        <div class="menu-divider"></div>
+        <div class="menu-item customize-toggle" id="customizeToggle">
+            <span><i data-icon="sliders-h"></i> تخصيص</span>
+            <span class="customize-arrow"><i data-icon="chevron-down"></i></span>
+        </div>
+        <div class="customize-content" id="customizeContent">
+            <div class="customize-item">
+                <span class="customize-label"><i data-icon="font"></i> نوع الخط</span>
+                <div class="custom-select-wrapper" id="fontSelectWrapper">
+                    <div class="custom-select-trigger" id="fontSelectTrigger">نظام (تقليدي)</div>
+                    <div class="custom-select-options" id="fontSelectOptions">
+                        <div class="custom-select-option selected" data-value="system">نظام (تقليدي)</div>
+                        <div class="custom-select-option" data-value="Amiri">أميري (Amiri)</div>
+                        <div class="custom-select-option" data-value="Scheherazade New">شهرزاد (Scheherazade)</div>
+                        <div class="custom-select-option" data-value="Noto Naskh Arabic">نوتو نسخ (Noto Naskh)</div>
+                        <div class="custom-select-option" data-value="Tajawal">تاجوال (Tajawal)</div>
+                        <div class="custom-select-option" data-value="Aref Ruqaa">عرف رقعة (Aref Ruqaa)</div>
+                        <div class="custom-select-option" data-value="Reem Kufi">ريم كوفي (Reem Kufi)</div>
+                        <div class="custom-select-option" data-value="Cairo">القاهرة (Cairo)</div>
+                        <div class="custom-select-option" data-value="Lateef">لطيف (Lateef)</div>
+                        <div class="custom-select-option" data-value="Harmattan">هرمطان (Harmattan)</div>
+                        <div class="custom-select-option" data-value="Markazi Text">مركزي (Markazi Text)</div>
+                        <div class="custom-select-option" data-value="El Messiri">المسيري (El Messiri)</div>
+                        <div class="custom-select-option" data-value="Mada">مدى (Mada)</div>
+                        <div class="custom-select-option" data-value="Almarai">المراعي (Almarai)</div>
+                        <div class="custom-select-option" data-value="Lemonada">ليمونادا (Lemonada)</div>
+                        <div class="custom-select-option" data-value="Changa">تشانغا (Changa)</div>
+                        <div class="custom-select-option" data-value="Rakkas">رقّاص (Rakkas)</div>
+                        <div class="custom-select-option" data-value="Katibeh">كاتبه (Katibeh)</div>
+                        <div class="custom-select-option" data-value="Mirza">ميرزا (Mirza)</div>
+                        <div class="custom-select-option" data-value="Fustat">فسطاط (Fustat)</div>
+                        <div class="custom-select-option" data-value="Gulzar">غلزار (Gulzar)</div>
+                        <div class="custom-select-option" data-value="Kufam">كوفام (Kufam)</div>
+                        <div class="custom-select-option" data-value="Zain">زين (Zain)</div>
+                        <div class="custom-select-option" data-value="IBM Plex Sans Arabic">آي بي إم (IBM Plex Sans Arabic)</div>
+                        <div class="custom-select-option" data-value="Alexandria">الإسكندرية (Alexandria)</div>
+                        <div class="custom-select-option" data-value="Vazirmatn">وزيرمتن (Vazirmatn)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="customize-item">
+                <span class="customize-label"><i data-icon="palette"></i> لون التطبيق</span>
+                <div class="color-picker-row" id="colorPicker">
+                    <span class="color-dot active" data-color="gold" style="background:#c9a84c;" title="ذهبي"></span>
+                    <span class="color-dot" data-color="green" style="background:#4caf50;" title="أخضر"></span>
+                    <span class="color-dot" data-color="blue" style="background:#2196f3;" title="أزرق"></span>
+                    <span class="color-dot" data-color="purple" style="background:#9c27b0;" title="بنفسجي"></span>
+                    <span class="color-dot" data-color="red" style="background:#f44336;" title="أحمر"></span>
+                    <span class="color-dot" data-color="orange" style="background:#ff9800;" title="برتقالي"></span>
+                    <span class="color-dot" data-color="teal" style="background:#009688;" title="فيروزي"></span>
+                    <span class="color-dot" data-color="pink" style="background:#e91e63;" title="وردي"></span>
+                    <span class="color-dot" data-color="indigo" style="background:#3f51b5;" title="نيلي"></span>
+                    <span class="color-dot" data-color="brown" style="background:#795548;" title="بني"></span>
+                </div>
+            </div>
+            <div class="customize-item">
+                <span class="customize-label"><i data-icon="adjust"></i> الأنماط</span>
+                <div class="theme-row">
+                    <button id="themeLight"><i data-icon="sun"></i> فاتح</button>
+                    <button id="themeDark"><i data-icon="moon"></i> مظلم</button>
+                </div>
+            </div>
+            <div class="customize-item">
+                <span class="customize-label"><i data-icon="font"></i> حجم النص</span>
+                <div class="size-control">
+                    <button id="textSizeDec">−</button>
+                    <span id="textSizeValue">100%</span>
+                    <button id="textSizeInc">+</button>
+                </div>
+            </div>
+            <div class="customize-item">
+                <span class="customize-label"><i data-icon="arrows-alt"></i> حجم العرض</span>
+                <div class="size-control">
+                    <button id="displaySizeDec">−</button>
+                    <span id="displaySizeValue">100%</span>
+                    <button id="displaySizeInc">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="menu-footer">منجد أمهز © <span id="menuYearDisplay"></span></div>
+    </div>
+    <div class="tafsir-modal" id="helpModal" style="display:none;">
+        <div class="tafsir-content help-content">
+            <h3><i data-icon="question-circle"></i> التعليمات</h3>
+            <div class="help-item"><i data-icon="headphones"></i><strong>الاستماع</strong><br>اختر القارئ من القائمة المنسدلة، ثم اضغط على أي سورة لتشغيلها. يمكنك التحكم بالصوت والسرعة والتكرار من المشغل.</div>
+            <div class="help-item"><i data-icon="star"></i><strong>المفضلة</strong><br>اضغط على نجمة بجانب السورة أو القارئ لحفظها. يمكنك الوصول إليها من القائمة الجانبية.</div>
+            <div class="help-item"><i data-icon="book"></i><strong>القراءة والتفسير</strong><br>اضغط على زر "كتاب" لفتح السورة للقراءة. اضغط على أي آية لعرض تفسيرها من تفسير الميزان.</div>
+            <div class="help-item"><i data-icon="share-alt"></i><strong>المشاركة</strong><br>اضغط على زر المشاركة بجانب الآية لمشاركة النص مع التفسير.</div>
+            <div class="help-item"><i data-icon="radio"></i><strong>الراديو المباشر</strong><br>اضغط على زر "راديو مباشر" لتشغيل البث الحي للقارئ المختار. اضغط مرة أخرى للإيقاف.</div>
+            <div class="help-item"><i data-icon="history"></i><strong>استئناف الجلسات</strong><br>عند فتح التطبيق، ستظهر نافذة لاستئناف جلسات الاستماع والقراءة السابقة.</div>
+            <div class="help-item"><i data-icon="palette"></i><strong>التخصيص</strong><br>من القائمة الجانبية يمكنك تغيير نوع الخط، لون التطبيق، والتبديل بين النمط الفاتح والمظلم.</div>
+            <div class="help-item"><i data-icon="download"></i><strong>تنزيل السور</strong><br>اضغط على زر التنزيل بجانب السورة لتنزيلها للاستماع بدون إنترنت. يمكنك اختيار "تنزيل متعدد" لتنزيل عدة سور دفعة واحدة.</div>
+            <div class="help-item"><i data-icon="search"></i><strong>البحث</strong><br>استخدم مربع البحث للعثور على قارئ أو سورة أو آية بسرعة.</div>
+            <div class="help-item"><i data-icon="font"></i><strong>حجم النص والعرض</strong><br>من القائمة الجانبية يمكنك تكبير أو تصغير حجم النصوص وحجم العناصر بشكل منفصل.</div>
+            <div class="help-item"><i data-icon="hourglass-half"></i><strong>مؤقت النوم الشامل</strong><br>اضغط على أيقونة الساعة الرملية في الشريط العلوي لتحديد وقت إيقاف التشغيل تلقائياً. يمكنك ضبط الدقائق والثواني بدقة، والمؤقت يعمل على السور والراديو معاً. يظهر العد التنازلي في الشريط العلوي.</div>
+            <div class="help-item" style="border:2px solid #e74c3c;background:rgba(231,76,60,0.08);"><i data-icon="exclamation-triangle" style="color:#e74c3c;"></i><strong style="color:#e74c3c;">تنبيه مهم</strong><br><span style="color:#e74c3c;font-size:.85rem;">في حال عدم ظهور قائمة القراء، يرجى الذهاب إلى <strong>القائمة الجانبية ← إعادة تعيين التطبيق</strong>، ثم تحديد <strong>فقط "إعادة تعيين تفضيل القراء"</strong> والضغط على موافق.</span></div>
+            <div class="help-dont-show-container" style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem;padding-bottom:.5rem;"><input type="checkbox" id="helpDontShowAgain"><label for="helpDontShowAgain" style="font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);">لا تظهر هذا مجدداً</label></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-top:.5rem;padding-bottom:.5rem;"><button class="btn-close-modal" id="helpClose" style="width:100%;">فهمت ✓</button></div>
+        </div>
+    </div>
+    <div class="tafsir-modal" id="resetModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:28rem;text-align:right;">
+            <h3 style="text-align:center;"><i data-icon="exclamation-triangle" style="color:#e74c3c;"></i> إعادة تعيين التطبيق</h3>
+            <p style="font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);text-align:center;margin-bottom:1rem;">حدد الإجراءات التي تريد تنفيذها:</p>
+            <div style="display:flex;flex-direction:column;gap:.5rem;margin:1rem 0;">
+                <label class="reset-checkbox-label"><input type="checkbox" id="resetFavReaders" checked><span>إعادة تعيين تفضيل القراء</span></label>
+                <label class="reset-checkbox-label"><input type="checkbox" id="resetFavSurahs" checked><span>إعادة تعيين تفضيل السور</span></label>
+                <label class="reset-checkbox-label"><input type="checkbox" id="resetDownloads" checked><span id="resetDownloadsLabel">مسح السور المُنزّلة (0 سورة - 0 م.ب)</span></label>
+            </div>
+            <div class="reset-actions-bar"><button class="btn-cancel" id="resetCancel">إلغاء</button><button class="btn-danger" id="resetConfirm">موافق</button></div>
+        </div>
+    </div>
+    <div class="tafsir-modal" id="verifyModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:24rem;text-align:center;">
+            <h3><i data-icon="shield-alt" style="color:var(--gold);"></i> تأكيد الأمان</h3>
+            <p style="font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);margin-bottom:.5rem;">أدخل الرمز التالي لتأكيد العملية:</p>
+            <div id="captchaCode">8472</div>
+            <input type="text" id="captchaInput" class="captcha-input-numeric" maxlength="5" placeholder="***" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+            <div id="verifyError">الرمز غير صحيح، حاول مرة أخرى</div>
+            <div class="reset-actions-bar"><button class="btn-cancel" id="verifyCancel">إلغاء</button><button class="btn-gold" id="verifyConfirm">إدخال الرمز</button></div>
+        </div>
+    </div>
+    <div class="tafsir-modal download-confirm-modal" id="downloadConfirmModal" style="display:none;">
+        <div class="tafsir-content">
+            <h3 style="text-align:center;"><i data-icon="download" style="color:var(--gold);"></i> تأكيد التنزيل</h3>
+            <div id="dlConfirmInfo"><div class="surah-name-display" id="dlConfirmSurah"></div><div class="reader-name-display" id="dlConfirmReader"></div><div class="size-display" id="dlConfirmSize">جاري حساب الحجم...</div></div>
+            <div class="multi-check-wrap" style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;margin:1.3rem 0;border-top:1px solid var(--border);padding-top:1rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;">
+                    <input type="checkbox" id="dlConfirmMulti">
+                    <label for="dlConfirmMulti" style="font-weight:600;color:var(--text);font-size:calc(.95rem*var(--text-scale));cursor:pointer;">📦 تنزيل متعدد للسور</label>
+                </div>
+                <span class="multi-hint" style="font-size:calc(.75rem*var(--text-scale));color:var(--text-secondary);">( اختر عدة سور دفعة واحدة )</span>
+            </div>
+            <div class="reset-actions-bar" style="margin-top:.5rem;"><button class="btn-cancel" id="dlConfirmCancel">إلغاء</button><button class="btn-gold" id="dlConfirmOk"><i data-icon="play"></i> <span id="dlConfirmBtnText">تنزيل</span></button></div>
+        </div>
+    </div>
+    <div class="tafsir-modal" id="surahSelectionModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:34rem;">
+            <h3 style="text-align:center;"><i data-icon="file-alt" style="color:var(--gold);"></i> اختيار السور للتنزيل</h3>
+            <div class="selection-header"><span>القارئ: <strong id="selReaderName"></strong></span><span class="count">📦 <strong id="selCount">0</strong>/<span id="selTotal">114</span> سورة محددة</span></div>
+            <div class="selection-actions"><button class="sel-select-all" id="selSelectAll">✓ تحديد الكل</button><button class="sel-deselect-all" id="selDeselectAll">✕ إزالة الكل</button></div>
+            <div class="selection-grid" id="selectionGrid"></div>
+            <div class="selection-footer"><span class="size-info">💾 الحجم الإجمالي: <strong id="selTotalSize">0</strong></span><div class="reset-actions-bar" style="margin:0;"><button class="btn-cancel" id="selCancel">إلغاء</button><button class="btn-gold" id="selDownload"><i data-icon="play"></i> تنزيل المحدد</button></div></div>
+        </div>
+    </div>
+    <div class="download-progress-overlay" id="downloadProgressOverlay">
+        <div class="progress-box">
+            <div class="title">⬇️ جاري تنزيل السور</div>
+            <div class="reader-name" id="dlProgressReader"></div>
+            <div class="stats"><span>📊 التقدم: <strong id="dlProgressMain">0%</strong></span><span>📦 <strong id="dlProgressCount">0/0</strong></span></div>
+            <div class="main-bar"><div class="fill" id="dlProgressMainBar"></div></div>
+            <div class="surah-info">⏳ جاري تنزيل: <strong id="dlCurrentSurah">-</strong></div>
+            <div class="surah-bar"><div class="fill" id="dlCurrentSurahBar"></div></div>
+            <div class="surah-progress-text" id="dlCurrentSurahPct">0%</div>
+            <div class="btn-group"><button class="back-btn" id="dlProgressBack"><i data-icon="home"></i> العودة</button><button class="cancel-btn" id="dlProgressCancel"><i data-icon="stop"></i> إيقاف التنزيل</button></div>
+        </div>
+    </div>
+    <div class="tafsir-modal install-modal" id="installModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:28rem;text-align:center;">
+            <h3 style="color:var(--gold-dark);"><i data-icon="download"></i> تثبيت التطبيق</h3>
+            <div style="background:var(--bg);border-radius:var(--radius);padding:.8rem 1rem;margin:1rem 0 1.2rem 0;text-align:right;border-right:3px solid var(--gold);">
+                <p style="font-size:calc(.85rem*var(--text-scale));line-height:1.8;color:var(--text);margin:0;"><i data-icon="info-circle" style="color:var(--gold);"></i><strong>اختر طريقة التثبيت المناسبة لك:</strong></p>
+                <ul style="list-style:none;padding:0;margin:.3rem 0 0 0;font-size:calc(.8rem*var(--text-scale));line-height:2;color:var(--text-secondary);"><li>📱 <strong style="color:var(--gold-dark);">APK:</strong> تطبيق مستقل حجم صغير (1 ميغا)، يدعم جميع الميزات</li><li>🌐 <strong>PWA:</strong> اختصار للموقع،مدعوم فقط على بعض المتصفحات </li></ul>
+            </div>
+            <div class="install-options" style="display:flex;flex-direction:column;gap:.8rem;margin:0 0 1.2rem 0;">
+                <button id="installAPK" class="option-apk" style="padding:.8rem 1.2rem;border:2px solid var(--gold)!important;background:rgba(201,168,76,0.1)!important;border-radius:var(--radius);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:1rem;text-align:right;width:100%;font-family:var(--font-ui);"><i data-icon="file-download" style="font-size:1.8rem;color:var(--gold-dark);flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:calc(1rem*var(--text-scale));font-weight:700;color:var(--gold-dark);">📱 تحميل التطبيق (APK)</div><div style="font-size:calc(.7rem*var(--text-scale));opacity:.8;color:var(--text-secondary);">⭐ تطبيق مستقل - حجم صغير (1 ميغا)</div><div style="font-size:calc(.65rem*var(--text-scale));opacity:.6;color:var(--text-secondary);">✅ يدعم جميع الميزات، تجربة كاملة</div></div><span style="font-size:calc(.65rem*var(--text-scale));background:var(--gold);color:#fff;padding:.15rem .8rem;border-radius:1rem;font-weight:700;flex-shrink:0;">مُوصى به</span></button>
+                <button id="installPWA" class="option-pwa" style="padding:.8rem 1.2rem;border:1px solid var(--border);background:var(--bg-card);border-radius:var(--radius);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:1rem;text-align:right;width:100%;font-family:var(--font-ui);"><i data-icon="plus-circle" style="font-size:1.8rem;color:var(--text-secondary);flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:calc(1rem*var(--text-scale));font-weight:700;color:var(--text);">🌐 إضافة اختصار (PWA)</div><div style="font-size:calc(.7rem*var(--text-scale));opacity:.8;color:var(--text-secondary);">📌 اختصار للموقع على الشاشة الرئيسية</div><div style="font-size:calc(.65rem*var(--text-scale));opacity:.6;color:var(--text-secondary);">⚠️يعتمد كلياً على بيانات الموقع </div></div><span style="font-size:calc(.65rem*var(--text-scale));background:var(--border);color:var(--text-secondary);padding:.15rem .8rem;border-radius:1rem;font-weight:700;flex-shrink:0;">خيار سريع</span></button>
+            </div>
+            <button class="btn-close-modal" id="installModalClose" style="width:100%;">إلغاء</button>
+        </div>
+    </div>
+    <div class="tafsir-modal" id="sleepTimerModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:22rem;text-align:center;">
+            <h3 style="color:var(--gold-dark);"><i data-icon="moon"></i> مؤقت النوم</h3>
+            <p style="font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);margin:.5rem 0 1rem 0;">سيتم إيقاف التشغيل تلقائياً بعد:</p>
+            <div class="sleep-controls">
+                <div class="row">
+                    <div class="col">
+                        <span class="label">ثواني</span>
+                        <button class="arrow-btn" data-target="seconds" data-dir="up"><i data-icon="chevron-up"></i></button>
+                        <span class="value" id="sleepSeconds">00</span>
+                        <button class="arrow-btn" data-target="seconds" data-dir="down"><i data-icon="chevron-down"></i></button>
+                    </div>
+                    <div class="col">
+                        <span class="label">دقائق</span>
+                        <button class="arrow-btn" data-target="minutes" data-dir="up"><i data-icon="chevron-up"></i></button>
+                        <span class="value" id="sleepMinutes">00</span>
+                        <button class="arrow-btn" data-target="minutes" data-dir="down"><i data-icon="chevron-down"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="reset-actions-bar" style="margin-top:0.5rem;">
+                <button class="btn-cancel" id="sleepTimerCancel">إلغاء</button>
+                <button class="btn-gold" id="sleepTimerStart"><i data-icon="play"></i> تفعيل</button>
+            </div>
+            <button class="btn-close-modal" id="sleepTimerClose" style="width:100%;margin-top:0.8rem;">إغلاق</button>
+        </div>
+    </div>
+    <div class="tafsir-modal" id="verifyProgressModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:32rem;text-align:center;">
+            <h3 style="color:var(--gold-dark);"><i data-icon="search"></i> جاري التحقق من السور</h3>
+            <div id="verifyProgressContent">
+                <div style="margin:1rem 0;">
+                    <div style="font-size:2rem;margin-bottom:0.5rem;" id="verifyProgressIcon">⏳</div>
+                    <div style="font-size:calc(1.1rem*var(--text-scale));font-weight:600;color:var(--text);" id="verifyProgressStatusOld">جاري التحقق...</div>
+                    <div style="font-size:calc(.9rem*var(--text-scale));color:var(--text-secondary);margin:.5rem 0;" id="verifyProgressDetail">0/114</div>
+                    <div class="progress-bar-bg">
+                        <div id="verifyProgressBarOld" class="progress-bar-fill"></div>
+                    </div>
+                    <div style="font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);margin:.3rem 0;" id="verifyProgressStats"></div>
+                </div>
+                <button class="btn-gold" id="verifyProgressClose" style="display:none;padding:.6rem 2rem;border:none;border-radius:2rem;color:#fff;font-family:var(--font-ui);font-weight:700;font-size:calc(.95rem*var(--text-scale));cursor:pointer;transition:all .15s ease;background:var(--gold);">موافق</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tafsir-modal download-confirm-modal" id="deleteConfirmModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:24rem;text-align:center;">
+            <h3 style="text-align:center;color:#e74c3c;">
+                <i data-icon="trash" style="color:#e74c3c;"></i> تأكيد حذف السورة
+            </h3>
+            <div id="dlDeleteInfo">
+                <div class="surah-name-display" id="dlDeleteSurah" style="color:#e74c3c;"></div>
+                <div class="reader-name-display" id="dlDeleteReader"></div>
+                <div class="size-display" id="dlDeleteSize">جاري حساب الحجم...</div>
+                <div style="font-size:.8rem;color:var(--text-secondary);margin-top:.5rem;">
+                    ⚠️ سيتم حذف الملف الصوتي من جهازك
+                </div>
+            </div>
+            <div class="multi-check-wrap" style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;margin:1.3rem 0;border-top:1px solid var(--border);padding-top:1rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;">
+                    <input type="checkbox" id="dlDeleteMulti">
+                    <label for="dlDeleteMulti" style="font-weight:600;color:var(--text);font-size:calc(.95rem*var(--text-scale));cursor:pointer;">🗑️ حذف متعدد للسور</label>
+                </div>
+                <span class="multi-hint" style="font-size:calc(.75rem*var(--text-scale));color:var(--text-secondary);">( اختر عدة سور محملة لحذفها دفعة واحدة )</span>
+            </div>
+            <div class="reset-actions-bar" style="margin-top:.5rem;">
+                <button class="btn-cancel" id="dlDeleteCancel">إلغاء</button>
+                <button class="btn-danger" id="dlDeleteOk">
+                    <i data-icon="trash"></i> <span id="dlDeleteBtnText">تأكيد الحذف</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tafsir-modal" id="deleteSelectionModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:34rem;">
+            <h3 style="text-align:center;color:#e74c3c;">
+                <i data-icon="trash" style="color:#e74c3c;"></i> اختيار السور للحذف
+            </h3>
+            <div class="selection-header">
+                <span>القارئ: <strong id="delSelReaderName"></strong></span>
+                <span class="count">📦 <strong id="delSelCount">0</strong>/<span id="delSelTotal">114</span> سورة محددة</span>
+            </div>
+            <div class="selection-actions">
+                <button class="sel-select-all" id="delSelSelectAll">✓ تحديد الكل</button>
+                <button class="sel-deselect-all" id="delSelDeselectAll">✕ إزالة الكل</button>
+            </div>
+            <div class="selection-grid" id="deleteSelectionGrid"></div>
+            <div class="selection-footer">
+                <span class="size-info">💾 الحجم الإجمالي: <strong id="delSelTotalSize">0</strong></span>
+                <div class="reset-actions-bar" style="margin:0;">
+                    <button class="btn-cancel" id="delSelCancel">رجوع</button>
+                    <button class="btn-danger" id="delSelDelete"><i data-icon="trash"></i> حذف المحدد</button>
+                </div>
+            </div>
+        </div>
+    </div>

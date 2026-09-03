@@ -1,0 +1,998 @@
+<div class="tafsir-modal" id="deleteVerifyModal" style="display:none;">
+        <div class="tafsir-content" style="max-width:24rem;text-align:center;">
+            <h3 style="color:#e74c3c;"><i data-icon="shield-alt" style="color:#e74c3c;"></i> تأكيد الحذف</h3>
+            <p style="font-size:calc(.85rem*var(--text-scale));color:var(--text-secondary);margin-bottom:.5rem;">
+                سيتم حذف <strong id="deleteVerifyCount" style="color:#e74c3c;">0</strong> سورة نهائياً.<br>
+                أدخل الرمز التالي لتأكيد العملية:
+            </p>
+            <div id="deleteCaptchaCode" style="font-size:calc(2.5rem*var(--text-scale));font-weight:700;color:var(--gold-dark);background:var(--bg);padding:.5rem;border-radius:.5rem;margin:.5rem 0;font-family:'Courier New',monospace;letter-spacing:4px;direction:ltr;text-align:center;">8472</div>
+            <input type="text" id="deleteCaptchaInput" class="captcha-input-numeric" maxlength="5" placeholder="***" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="width:100%;padding:.5rem 1rem;border:2px solid var(--border);border-radius:.5rem;background:var(--bg-card);color:var(--text);font-size:calc(1.2rem*var(--text-scale));text-align:center;font-family:'Courier New',monospace;direction:ltr;outline:none;margin:.5rem 0;">
+            <div id="deleteVerifyError" style="color:#e74c3c;font-size:calc(.8rem*var(--text-scale));margin-top:.5rem;display:none;">الرمز غير صحيح، حاول مرة أخرى</div>
+            <div class="reset-actions-bar">
+                <button class="btn-cancel" id="deleteVerifyCancel">إلغاء</button>
+                <button class="btn-danger" id="deleteVerifyConfirm"><i data-icon="trash"></i> تأكيد الحذف</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+(function() {
+    window.fontAwesomeLoaded = false;
+    let isRendering = false;
+    let isInitialRender = true;
+    let quranTexts = null;
+
+    var modalStack = [];
+    var windowStack = [];
+    var windowRelations = {
+        'deleteVerifyModal': {
+            parent: 'deleteSelectionModal',
+            onClose: function() { showDeleteSelectionModal(); }
+        },
+        'deleteSelectionModal': {
+            parent: 'deleteConfirmModal',
+            onClose: function() { showDeleteConfirm(confirmIdx); }
+        },
+        'deleteConfirmModal': {
+            parent: null,
+            onClose: null
+        },
+        'surahSelectionModal': {
+            parent: 'downloadConfirmModal',
+            onClose: function() { showDownloadConfirm(confirmIdx); }
+        },
+        'downloadConfirmModal': {
+            parent: null,
+            onClose: null
+        },
+        'verifyModal': {
+            parent: 'resetModal',
+            onClose: function() { showResetModal(); }
+        },
+        'resetModal': {
+            parent: null,
+            onClose: null
+        },
+        'readerView': {
+            parent: null,
+            onClose: null
+        },
+        'tafsirModal': {
+            parent: null,
+            onClose: null
+        },
+        'sideMenu': {
+            parent: null,
+            onClose: null
+        }
+    };
+
+    function pushWindow(id) {
+        windowStack = windowStack.filter(w => w !== id);
+        windowStack.push(id);
+    }
+
+    function popWindow() {
+        return windowStack.pop();
+    }
+
+    function getTopWindow() {
+        return windowStack.length > 0 ? windowStack[windowStack.length - 1] : null;
+    }
+
+    function getParentWindow(id) {
+        return windowRelations[id]?.parent || null;
+    }
+
+    function openModalUniversal(id) {
+        var modal = document.getElementById(id);
+        if (!modal) return;
+        if (id === 'statsTooltip' || id === 'sideMenu') {
+            if (id === 'sideMenu') {
+                toggleSideMenu(true);
+                return;
+            }
+            if (id === 'statsTooltip') {
+                modal.classList.add('show');
+                return;
+            }
+            return;
+        }
+        pushWindow(id);
+        modal.style.display = 'flex';
+        modal.classList.add('show');
+        lockBodyScroll();
+        document.getElementById('mainApp').classList.add('blurred');
+        try {
+            history.pushState({ modal: id, stack: windowStack.length }, '', window.location.href);
+        } catch (e) {
+            window.location.hash = 'modal-' + id;
+        }
+    }
+
+    function closeModalUniversal(id) {
+        var modal = document.getElementById(id);
+        if (!modal) return;
+        if (id === 'statsTooltip') {
+            modal.classList.remove('show');
+            return;
+        }
+        if (id === 'sideMenu') {
+            toggleSideMenu(false);
+            return;
+        }
+        windowStack = windowStack.filter(w => w !== id);
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        if (windowStack.length === 0) {
+            unlockBodyScroll();
+            document.getElementById('mainApp').classList.remove('blurred');
+            try {
+                history.replaceState({ modal: null }, '', window.location.href);
+            } catch (e) {}
+        } else {
+            try {
+                var top = windowStack[windowStack.length - 1];
+                history.replaceState({ modal: top, stack: windowStack.length }, '', window.location.href);
+            } catch (e) {}
+        }
+    }
+
+    function closeCurrentAndReturn() {
+        var topWindow = getTopWindow();
+        if (!topWindow) {
+            if (windowStack.length > 0) {
+                windowStack = [];
+                try {
+                    history.replaceState({ modal: null }, '', window.location.href);
+                } catch (e) {}
+            }
+            return false;
+        }
+        var modal = document.getElementById(topWindow);
+        if (!modal || modal.style.display !== 'flex') {
+            windowStack = windowStack.filter(function(id) {
+                var m = document.getElementById(id);
+                return m && m.style.display === 'flex';
+            });
+            return false;
+        }
+        var parentId = getParentWindow(topWindow);
+        var parentModal = parentId ? document.getElementById(parentId) : null;
+        closeModalUniversal(topWindow);
+        if (parentId && windowRelations[topWindow]?.onClose) {
+            if (!parentModal || parentModal.style.display !== 'flex') {
+                setTimeout(function() {
+                    windowRelations[topWindow].onClose();
+                }, 100);
+            }
+            return true;
+        }
+        return true;
+    }
+
+    function closeModalWithoutHistory(id) {
+        var modal = document.getElementById(id);
+        if (!modal) return;
+        windowStack = windowStack.filter(function(m) { return m !== id; });
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        if (windowStack.length === 0) {
+            unlockBodyScroll();
+            document.getElementById('mainApp').classList.remove('blurred');
+        }
+    }
+
+    function closeTopModal() {
+        if (windowStack.length > 0) {
+            return closeCurrentAndReturn();
+        }
+        var allWindows = [
+            'deleteVerifyModal', 'deleteSelectionModal', 'deleteConfirmModal',
+            'verifyModal', 'resetModal', 'downloadProgressOverlay',
+            'verifyProgressModal', 'downloadConfirmModal', 'surahSelectionModal',
+            'installModal', 'sideMenu', 'helpModal', 'sleepTimerModal',
+            'tafsirModal', 'readerView', 'statsTooltip'
+        ];
+        var priority = [
+            'deleteVerifyModal', 'deleteSelectionModal', 'deleteConfirmModal',
+            'verifyModal', 'resetModal',
+            'surahSelectionModal', 'downloadConfirmModal',
+            'downloadProgressOverlay', 'verifyProgressModal',
+            'tafsirModal', 'installModal', 'helpModal', 'sleepTimerModal',
+            'readerView', 'sideMenu', 'statsTooltip'
+        ];
+        for (var i = 0; i < priority.length; i++) {
+            var id = priority[i];
+            var modal = document.getElementById(id);
+            if (!modal) continue;
+            if (id === 'readerView' && modal.classList.contains('visible')) {
+                closeReader();
+                return true;
+            }
+            if (id === 'sideMenu' && modal.classList.contains('open')) {
+                toggleSideMenu(false);
+                return true;
+            }
+            if (id === 'statsTooltip' && modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                return true;
+            }
+            if (modal.style.display === 'flex') {
+                closeModalUniversal(id);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function initHistory() {
+        if (window.location.hash) {
+            window.location.hash = '';
+        }
+        history.replaceState({ modal: null }, '', window.location.href);
+    }
+
+    initHistory();
+
+    const readerEntries = [
+        { id: 'abdulbaset_murattal', name: 'عبد الباسط عبد الصمد (مرتل)', url: 'https://server7.mp3quran.net/basit/', radio: 'https://backup.qurango.net/radio/abdulbasit_abdulsamad' },
+        { id: 'abdulbaset_mujawwad', name: 'عبد الباسط عبد الصمد (مجود)', url: 'https://server7.mp3quran.net/basit/Almusshaf-Al-Mojawwad/', radio: 'https://qurango.net/radio/abdulbasit_abdulsamad_mojawwad' },
+        { id: 'minsh_murattal', name: 'محمد صديق المنشاوي (مرتل)', url: 'https://server10.mp3quran.net/minsh/', radio: 'https://backup.qurango.net/radio/mohammed_siddiq_alminshawi' },
+        { id: 'minsh_mujawwad', name: 'محمد صديق المنشاوي (مجود)', url: 'https://server10.mp3quran.net/minsh/Almusshaf-Al-Mojawwad/', radio: 'https://qurango.net/radio/mohammed_siddiq_alminshawi_mojawwad' },
+        { id: 'maher_murattal', name: 'مشاري راشد العفاسي (مرتل)', url: 'https://server8.mp3quran.net/afs/', radio: 'https://backup.qurango.net/radio/mishary_alafasi' },
+        { id: 'islam_murattal', name: 'إسلام صبحي (مرتل)', url: 'https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/', radio: 'https://stream.zeno.fm/zorvpgdqfzbuv' },
+        { id: 'ahmad_nu_murattal', name: 'أحمد نعينع (مرتل)', url: 'https://server11.mp3quran.net/ahmad_nu/', radio: 'https://backup.qurango.net/radio/ahmad_nauina' },
+        { id: 'dokali_murattal', name: 'الدوكالي محمد العالم (مرتل)', url: 'https://server7.mp3quran.net/dokali/', radio: 'https://backup.qurango.net/radio/addokali_mohammad_alalim' },
+        { id: 'alzain_murattal', name: 'الزين محمد أحمد (مرتل)', url: 'https://server9.mp3quran.net/alzain/', radio: 'https://backup.qurango.net/radio/alzain_mohammad_ahmad' },
+        { id: 'koshi_murattal', name: 'العيون الكوشي (مرتل)', url: 'https://server11.mp3quran.net/koshi/', radio: 'https://backup.qurango.net/radio/aloyoon_alkoshi' },
+        { id: 'fateh_murattal', name: 'الفاتح محمد الزبير (مرتل)', url: 'https://server6.mp3quran.net/fateh/', radio: 'https://backup.qurango.net/radio/alfateh_alzubair' },
+        { id: 'yassen_murattal', name: 'ياسين (مرتل)', url: 'https://server11.mp3quran.net/qari/', radio: 'https://backup.qurango.net/radio/alqaria_yassen' },
+        { id: 'hawashi_murattal', name: 'أحمد الحواشي (مرتل)', url: 'https://server11.mp3quran.net/hawashi/', radio: 'https://backup.qurango.net/radio/ahmad_alhawashi' },
+        { id: 'trabulsi_murattal', name: 'أحمد الطرابلسي (مرتل)', url: 'https://server10.mp3quran.net/trabulsi/', radio: 'https://backup.qurango.net/radio/ahmed_altrabulsi' },
+        { id: 'ajm_murattal', name: 'أحمد بن علي العجمي (مرتل)', url: 'https://server10.mp3quran.net/ajm/', radio: 'https://backup.qurango.net/radio/ahmad_alajmy' },
+        { id: 'shaheen_murattal', name: 'أحمد خليل شاهين (مرتل)', url: 'https://server16.mp3quran.net/shaheen/Rewayat-Hafs-A-n-Assem/', radio: 'https://backup.qurango.net/radio/ahmad_shaheen' },
+        { id: 'saber_murattal', name: 'أحمد صابر (مرتل)', url: 'https://server8.mp3quran.net/saber/', radio: 'https://backup.qurango.net/radio/ahmad_saber' },
+        { id: 'binhameed_murattal', name: 'أحمد طالب بن حميد (مرتل)', url: 'https://server16.mp3quran.net/a_binhameed/Rewayat-Hafs-A-n-Assem/', radio: 'https://backup.qurango.net/radio/a_binhameed' },
+        { id: 'aamer_murattal', name: 'أحمد عامر (مرتل)', url: 'https://server10.mp3quran.net/Aamer/', radio: 'https://backup.qurango.net/radio/ahmed_amer' },
+        { id: 'akrm_murattal', name: 'أكرم العلاقمي (مرتل)', url: 'https://server9.mp3quran.net/akrm/', radio: 'https://backup.qurango.net/radio/akram_alalaqmi' },
+        { id: 'akdr_murattal', name: 'إبراهيم الأخضر (مرتل)', url: 'https://server6.mp3quran.net/akdr/', radio: 'https://backup.qurango.net/radio/ibrahim_alakdar' },
+        { id: 'dosri_murattal', name: 'إبراهيم الدوسري (مرتل)', url: 'https://server10.mp3quran.net/ibrahim_dosri/Rewayat-Warsh-A-n-Nafi/', radio: 'https://backup.qurango.net/radio/ibrahim_aldosari' },
+        { id: 'abkr_murattal', name: 'إدريس أبكر (مرتل)', url: 'https://server6.mp3quran.net/abkr/', radio: 'https://backup.qurango.net/radio/idrees_abkr' },
+        { id: 'bader_murattal', name: 'بدر التركي (مرتل)', url: 'https://server10.mp3quran.net/bader/Rewayat-Hafs-A-n-Assem/', radio: 'https://backup.qurango.net/radio/bader' },
+        { id: 'balilah_murattal', name: 'بندر بليله (مرتل)', url: 'https://server6.mp3quran.net/balilah/', radio: 'https://backup.qurango.net/radio/bandar_balilah' },
+        { id: 'twfeeq_murattal', name: 'توفيق الصايغ (مرتل)', url: 'https://server6.mp3quran.net/twfeeq/', radio: 'https://backup.qurango.net/radio/tawfeeq_assayegh' },
+        { id: 'jamal_murattal', name: 'جمال شاكر عبدالله (مرتل)', url: 'https://server6.mp3quran.net/jamal/', radio: 'https://backup.qurango.net/radio/jamal_shaker_abdullah' },
+        { id: 'jaman_murattal', name: 'جمعان العصيمي (مرتل)', url: 'https://server6.mp3quran.net/jaman/', radio: 'https://backup.qurango.net/radio/jamaan_alosaimi' },
+        { id: 'hatem_murattal', name: 'حاتم فريد الواعر (مرتل)', url: 'https://server11.mp3quran.net/hatem/', radio: 'https://backup.qurango.net/radio/hatem_fareed_alwaer' },
+        { id: 'jleel_murattal', name: 'خالد الجليل (مرتل)', url: 'https://server10.mp3quran.net/jleel/', radio: 'https://backup.qurango.net/radio/khalid_aljileel' },
+        { id: 'qht_murattal', name: 'خالد القحطاني (مرتل)', url: 'https://server10.mp3quran.net/qht/', radio: 'https://backup.qurango.net/radio/khaled_alqahtani' },
+        { id: 'mohna_murattal', name: 'خالد المهنا (مرتل)', url: 'https://server11.mp3quran.net/mohna/', radio: 'https://backup.qurango.net/radio/khalid_almohana' },
+        { id: 'kafi_murattal', name: 'خالد عبدالكافي (مرتل)', url: 'https://server11.mp3quran.net/kafi/', radio: 'https://backup.qurango.net/radio/khalid_abdulkafi' },
+        { id: 'tnjy_murattal', name: 'خليفة الطنيجي (مرتل)', url: 'https://server12.mp3quran.net/tnjy/', radio: 'https://backup.qurango.net/radio/khalifa_altunaiji' },
+        { id: 'zaki_murattal', name: 'زكي داغستاني (مرتل)', url: 'https://server9.mp3quran.net/zaki/', radio: 'https://backup.qurango.net/radio/zaki_daghistani' },
+        { id: 's_gmd_murattal', name: 'سعد الغامدي (مرتل)', url: 'https://server7.mp3quran.net/s_gmd/', radio: 'https://backup.qurango.net/radio/saad_alghamdi' },
+        { id: 'shur_murattal', name: 'سعود الشريم (مرتل)', url: 'https://server7.mp3quran.net/shur/', radio: 'https://backup.qurango.net/radio/saud_alshuraim' },
+        { id: 'shl_murattal', name: 'سهل ياسين (مرتل)', url: 'https://server6.mp3quran.net/shl/', radio: 'https://backup.qurango.net/radio/sahl_yassin' },
+        { id: 'sayed_murattal', name: 'سيد رمضان (مرتل)', url: 'https://server12.mp3quran.net/sayed/', radio: 'https://backup.qurango.net/radio/sayeed_ramadan' },
+        { id: 'shatri_murattal', name: 'شيخ أبوبكر الشاطري (مرتل)', url: 'https://server11.mp3quran.net/shatri/', radio: 'https://backup.qurango.net/radio/shaik_abu_bakr_al_shatri' },
+        { id: 'taher_murattal', name: 'شيرزاد عبدالرحمن طاهر (مرتل)', url: 'https://server12.mp3quran.net/taher/', radio: 'https://backup.qurango.net/radio/shirazad_taher' },
+        { id: 'hkm_murattal', name: 'صابر عبدالحكم (مرتل)', url: 'https://server12.mp3quran.net/hkm/', radio: 'https://backup.qurango.net/radio/saber_abdulhakm' },
+        { id: 'habdan_murattal', name: 'صالح الهبدان (مرتل)', url: 'https://server6.mp3quran.net/habdan/', radio: 'https://backup.qurango.net/radio/saleh_alhabdan' },
+        { id: 's_bud_murattal', name: 'صلاح البدير (مرتل)', url: 'https://server6.mp3quran.net/s_bud/', radio: 'https://backup.qurango.net/radio/salah_albudair' },
+        { id: 'bu_khtr_murattal', name: 'صلاح بو خاطر (مرتل)', url: 'https://server8.mp3quran.net/bu_khtr/', radio: 'https://backup.qurango.net/radio/slaah_bukhatir' },
+        { id: 'tareq_murattal', name: 'طارق عبدالغني دعوب (مرتل)', url: 'https://server10.mp3quran.net/tareq/', radio: 'https://backup.qurango.net/radio/tareq_abdulgani_daawob' },
+        { id: 'a_klb_murattal', name: 'عادل الكلباني (مرتل)', url: 'https://server8.mp3quran.net/a_klb/', radio: 'https://backup.qurango.net/radio/adel_alkhalbany' },
+        { id: 'ryan_murattal', name: 'عادل ريان (مرتل)', url: 'https://server8.mp3quran.net/ryan/', radio: 'https://backup.qurango.net/radio/adel_ryyan' },
+        { id: 'thubti_murattal', name: 'عبدالبارئ الثبيتي (مرتل)', url: 'https://server6.mp3quran.net/thubti/', radio: 'https://backup.qurango.net/radio/abdelbari_altoubayti' },
+        { id: 'bari_murattal', name: 'عبدالبارئ محمد (مرتل)', url: 'https://server12.mp3quran.net/bari/', radio: 'https://backup.qurango.net/radio/abdulbari_mohammad' },
+        { id: 'sds_murattal', name: 'عبدالرحمن السديس (مرتل)', url: 'https://server11.mp3quran.net/sds/', radio: 'https://backup.qurango.net/radio/abdulrahman_alsudaes' },
+        { id: 'a_alshahhat_murattal', name: 'عبدالرحمن الشحات (مرتل)', url: 'https://server16.mp3quran.net/a_alshahhat/Rewayat-Hafs-A-n-Assem/', radio: 'https://backup.qurango.net/radio/a_alshahhat' },
+        { id: 'a_majed_murattal', name: 'عبدالرحمن الماجد (مرتل)', url: 'https://server10.mp3quran.net/a_majed/', radio: 'https://backup.qurango.net/radio/abdulrahman_almajed' },
+        { id: 'soufi_murattal', name: 'عبدالرشيد صوفي (مرتل)', url: 'https://server16.mp3quran.net/soufi/Rewayat-Assosi-A-n-Abi-Amr/', radio: 'https://backup.qurango.net/radio/abdulrasheed_soufi_assosi' },
+        { id: 'a_ahmed_murattal', name: 'عبدالعزيز الأحمد (مرتل)', url: 'https://server11.mp3quran.net/a_ahmed/', radio: 'https://backup.qurango.net/radio/abdul_aziz_alahmad' },
+        { id: 'buajan_murattal', name: 'عبدالله البعيجان (مرتل)', url: 'https://server8.mp3quran.net/buajan/', radio: 'https://backup.qurango.net/radio/buajan' },
+        { id: 'khalf_murattal', name: 'عبدالله الخلف (مرتل)', url: 'https://server14.mp3quran.net/khalf/', radio: 'https://backup.qurango.net/radio/abdullah_alkhalaf' },
+        { id: 'kandari_murattal', name: 'عبدالله الكندري (مرتل)', url: 'https://server10.mp3quran.net/Abdullahk/', radio: 'https://backup.qurango.net/radio/abdullah_alkandari' },
+        { id: 'mtrod_murattal', name: 'عبدالله المطرود (مرتل)', url: 'https://server8.mp3quran.net/mtrod/', radio: 'https://backup.qurango.net/radio/abdullah_almattrod' },
+        { id: 'bsfr_murattal', name: 'عبدالله بصفر (مرتل)', url: 'https://server6.mp3quran.net/bsfr/', radio: 'https://backup.qurango.net/radio/abdullah_basfer' },
+        { id: 'kyat_murattal', name: 'عبدالله خياط (مرتل)', url: 'https://server12.mp3quran.net/kyat/', radio: 'https://backup.qurango.net/radio/abdullah_khayyat' },
+        { id: 'jhn_murattal', name: 'عبدالله عواد الجهني (مرتل)', url: 'https://server13.mp3quran.net/jhn/', radio: 'https://backup.qurango.net/radio/abdullah_aljohany' },
+        { id: 'harthi_murattal', name: 'عبدالمحسن الحارثي (مرتل)', url: 'https://server6.mp3quran.net/mohsin_harthi/', radio: 'https://backup.qurango.net/radio/abdulmohsin_alharthy' },
+        { id: 'obk_murattal', name: 'عبدالمحسن العبيكان (مرتل)', url: 'https://server12.mp3quran.net/obk/', radio: 'https://backup.qurango.net/radio/abdulmohsin_alobaikan' },
+        { id: 'kanakeri_murattal', name: 'عبدالهادي أحمد كناكري (مرتل)', url: 'https://server6.mp3quran.net/kanakeri/', radio: 'https://backup.qurango.net/radio/abdulhadi_kanakeri' },
+        { id: 'wdod_murattal', name: 'عبدالودود حنيف (مرتل)', url: 'https://server8.mp3quran.net/wdod/', radio: 'https://backup.qurango.net/radio/abdulwadood_haneef' },
+        { id: 'a_jbr_murattal', name: 'علي جابر (مرتل)', url: 'https://server11.mp3quran.net/a_jbr/', radio: 'https://backup.qurango.net/radio/ali_jaber' },
+        { id: 'hajjaj_murattal', name: 'علي حجاج السويسي (مرتل)', url: 'https://server9.mp3quran.net/hajjaj/', radio: 'https://backup.qurango.net/radio/ali_hajjaj_alsouasi' },
+        { id: 'hafz_murattal', name: 'عماد زهير حافظ (مرتل)', url: 'https://server6.mp3quran.net/hafz/', radio: 'https://backup.qurango.net/radio/emad_hafez' },
+        { id: 'omar_warsh_murattal', name: 'عمر القزابري (مرتل)', url: 'https://server9.mp3quran.net/omar_warsh/', radio: 'https://backup.qurango.net/radio/omar_alqazabri' },
+        { id: 'frs_a_murattal', name: 'فارس عباد (مرتل)', url: 'https://server8.mp3quran.net/frs_a/', radio: 'https://backup.qurango.net/radio/fares_abbad' },
+        { id: 'zaml_murattal', name: 'ماجد الزامل (مرتل)', url: 'https://server9.mp3quran.net/zaml/', radio: 'https://backup.qurango.net/radio/majed_alzamel' },
+        { id: 'maher_m_murattal', name: 'ماهر المعيقلي (مرتل)', url: 'https://server12.mp3quran.net/maher/', radio: 'https://backup.qurango.net/radio/maher' },
+        { id: 'maher_m_mujawwad', name: 'ماهر المعيقلي (مجود)', url: 'https://server12.mp3quran.net/maher/Almusshaf-Al-Mojawwad/', radio: 'https://backup.qurango.net/radio/maher' },
+        { id: 'shaksh_murattal', name: 'ماهر شخاشيرو (مرتل)', url: 'https://server10.mp3quran.net/shaksh/', radio: 'https://backup.qurango.net/radio/maher_shakhashero' },
+        { id: 'sneineh_murattal', name: 'محمد أبو سنينة (مرتل)', url: 'https://server16.mp3quran.net/sneineh/Rewayat-Qalon-A-n-Nafi/', radio: 'https://backup.qurango.net/radio/sneineh' },
+        { id: 'qeniwa_murattal', name: 'محمد الأمين قنيوة (مرتل)', url: 'https://server16.mp3quran.net/qeniwa/Rewayat-Qalon-A-n-Nafi/', radio: 'https://backup.qurango.net/radio/qeniwa' },
+        { id: 'faqih_murattal', name: 'محمد الفقيه (مرتل)', url: 'https://server16.mp3quran.net/M_Alfaqih/Rewayat-Hafs-A-n-Assem/', radio: 'https://backup.qurango.net/radio/M_Alfaqih' },
+        { id: 'lhdan_murattal', name: 'محمد اللحيدان (مرتل)', url: 'https://server8.mp3quran.net/lhdan/', radio: 'https://backup.qurango.net/radio/mohammed_allohaidan' },
+        { id: 'jbrl_murattal', name: 'محمد جبريل (مرتل)', url: 'https://server8.mp3quran.net/jbrl/', radio: 'https://backup.qurango.net/radio/mohammed_jibreel' },
+        { id: 'rashad_murattal', name: 'محمد رشاد الشريف (مرتل)', url: 'https://server10.mp3quran.net/rashad/', radio: 'https://backup.qurango.net/radio/mohammad_rashad_alshareef' },
+        { id: 'shah_murattal', name: 'محمد صالح عالم شاه (مرتل)', url: 'https://server12.mp3quran.net/shah/', radio: 'https://backup.qurango.net/radio/mohammad_saleh_alim_shah' },
+        { id: 'abdullah_murattal', name: 'محمد عبدالحكيم سعيد العبدالله (مرتل)', url: 'https://server9.mp3quran.net/abdullah/', radio: 'https://backup.qurango.net/radio/mohammad_alabdullah_albizi' },
+        { id: 'krm_murattal', name: 'محمد عبدالكريم (مرتل)', url: 'https://server12.mp3quran.net/m_krm/Rewayat-Warsh-A-n-Nafi-Men-Tariq-Abi-Baker-Alasbahani/', radio: 'https://backup.qurango.net/radio/mohammad_abdullkarem_alasbahani' },
+        { id: 'khan_murattal', name: 'محمد عثمان خان (مرتل)', url: 'https://server6.mp3quran.net/khan/', radio: 'https://backup.qurango.net/radio/mohammed_osman_khan' },
+        { id: 'mrifai_murattal', name: 'محمود الرفاعي (مرتل)', url: 'https://server11.mp3quran.net/mrifai/', radio: 'https://backup.qurango.net/radio/mahmood_al_rifai' },
+        { id: 'sheimy_murattal', name: 'محمود الشيمي (مرتل)', url: 'https://server10.mp3quran.net/sheimy/', radio: 'https://backup.qurango.net/radio/mahmood_alsheimy' },
+        { id: 'husr_murattal', name: 'محمود خليل الحصري (مرتل)', url: 'https://server13.mp3quran.net/husr/', radio: 'https://backup.qurango.net/radio/mahmoud_khalil_alhussary' },
+        { id: 'husr_mujawwad', name: 'محمود خليل الحصري (مجود)', url: 'https://server13.mp3quran.net/husr/Almusshaf-Al-Mojawwad/', radio: 'https://backup.qurango.net/radio/mahmoud_khalil_alhussary_mojawwad' },
+        { id: 'bna_murattal', name: 'محمود علي البنا (مرتل)', url: 'https://server8.mp3quran.net/bna/', radio: 'https://backup.qurango.net/radio/mahmoud_ali__albanna' },
+        { id: 'bna_mujawwad', name: 'محمود علي البنا (مجود)', url: 'https://server8.mp3quran.net/bna/Almusshaf-Al-Mojawwad/', radio: 'https://backup.qurango.net/radio/mahmoud_ali__albanna_mojawwad' },
+        { id: 'lahoni_murattal', name: 'مصطفى اللاهوني (مرتل)', url: 'https://server6.mp3quran.net/lahoni/', radio: 'https://backup.qurango.net/radio/mustafa_allahoni' },
+        { id: 'ra3ad_murattal', name: 'مصطفى رعد العزاوي (مرتل)', url: 'https://server8.mp3quran.net/ra3ad/', radio: 'https://backup.qurango.net/radio/mustafa_raad_alazawy' },
+        { id: 'harthi2_murattal', name: 'معيض الحارثي (مرتل)', url: 'https://server8.mp3quran.net/harthi/', radio: 'https://backup.qurango.net/radio/moeedh_alharthi' },
+        { id: 'sultany_murattal', name: 'مفتاح السلطني (مرتل)', url: 'https://server14.mp3quran.net/muftah_sultany/Rewayat-Hafs-A-n-Assem/', radio: 'https://backup.qurango.net/radio/muftah_alsaltany' },
+        { id: 'bilal_murattal', name: 'موسى بلال (مرتل)', url: 'https://server11.mp3quran.net/bilal/', radio: 'https://backup.qurango.net/radio/mousa_bilal' },
+        { id: 'alosfor_murattal', name: 'ناصر العصفور (مرتل)', url: 'https://server14.mp3quran.net/alosfor/', radio: 'https://backup.qurango.net/radio/nasser_alosfor' },
+        { id: 'qtm_murattal', name: 'ناصر القطامي (مرتل)', url: 'https://server6.mp3quran.net/qtm/', radio: 'https://backup.qurango.net/radio/nasser_alqatami' },
+        { id: 'almajed_murattal', name: 'ناصر الماجد (مرتل)', url: 'https://server14.mp3quran.net/nasser_almajed/', radio: 'https://backup.qurango.net/radio/nasser_almajed' },
+        { id: 'nabil_murattal', name: 'نبيل الرفاعي (مرتل)', url: 'https://server9.mp3quran.net/nabil/', radio: 'https://backup.qurango.net/radio/nabil_al_rifay' },
+        { id: 'namh_murattal', name: 'نعمة الحسان (مرتل)', url: 'https://server8.mp3quran.net/namh/', radio: 'https://backup.qurango.net/radio/neamah_alhassan' },
+        { id: 'nourin_murattal', name: 'نورين محمد صديق (مرتل)', url: 'https://server16.mp3quran.net/nourin_siddig/Rewayat-Aldori-A-n-Abi-Amr/', radio: 'https://backup.qurango.net/radio/nourin_siddig' },
+        { id: 'hani_murattal', name: 'هاني الرفاعي (مرتل)', url: 'https://server8.mp3quran.net/hani/', radio: 'https://backup.qurango.net/radio/hani_arrifai' },
+        { id: 'hazza_murattal', name: 'هزاع البلوشي (مرتل)', url: 'https://server11.mp3quran.net/hazza/', radio: 'https://backup.qurango.net/radio/hazza' },
+        { id: 'hitham_murattal', name: 'هيثم الجدعاني (مرتل)', url: 'https://server16.mp3quran.net/hitham/Rewayat-Hafs-A-n-Assem/', radio: 'https://backup.qurango.net/radio/hitham_aljadani' },
+        { id: 'waleed_murattal', name: 'وليد النائحي (مرتل)', url: 'https://server9.mp3quran.net/waleed/', radio: 'https://backup.qurango.net/radio/waleed_alnaehi' },
+        { id: 'yasser_d_murattal', name: 'ياسر الدوسري (مرتل)', url: 'https://server11.mp3quran.net/yasser/', radio: 'https://backup.qurango.net/radio/yasser_aldosari' },
+        { id: 'qurashi_murattal', name: 'ياسر القرشي (مرتل)', url: 'https://server9.mp3quran.net/qurashi/', radio: 'https://backup.qurango.net/radio/yasser_alqurashi' },
+        { id: 'mzroyee_murattal', name: 'ياسر المزروعي (مرتل)', url: 'https://server9.mp3quran.net/mzroyee/', radio: 'https://backup.qurango.net/radio/yasser_almazroyee' },
+        { id: 'yahya_murattal', name: 'يحيى حوا (مرتل)', url: 'https://server12.mp3quran.net/yahya/', radio: 'https://backup.qurango.net/radio/yahya_hawwa' },
+        { id: 'yousef_murattal', name: 'يوسف الشويعي (مرتل)', url: 'https://server9.mp3quran.net/yousef/', radio: 'https://backup.qurango.net/radio/yousef_alshoaey' },
+        { id: 'noah_murattal', name: 'يوسف بن نوح أحمد (مرتل)', url: 'https://server8.mp3quran.net/noah/', radio: 'https://backup.qurango.net/radio/yousef_bin_noah_ahmad' }
+    ];
+
+    const surahNames = ["الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس", "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه", "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم", "لقمان", "السجدة", "الأحزاب", "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر", "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق", "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة", "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج", "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس", "التكوير", "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد", "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات", "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر", "المسد", "الإخلاص", "الفلق", "الناس"];
+
+    let currentReader = localStorage.getItem('currentReader') || 'abdulbaset_murattal';
+    let audio = new Audio(),
+        radioAudio = new Audio(),
+        isRadio = false,
+        isRadioPlaying = false,
+        currentSurah = -1,
+        isPlaying = false,
+        repeatMode = 'off';
+    let speed = parseFloat(localStorage.getItem('playSpeed') || '1'),
+        volume = parseFloat(localStorage.getItem('playerVolume') || '0.7'),
+        fontsize = parseFloat(localStorage.getItem('quranFontSize') || '1.2');
+    let favSurahs = JSON.parse(localStorage.getItem('favSurahs') || '[]');
+    let favReaders = JSON.parse(localStorage.getItem('favReaders') || '["abdulbaset_murattal","abdulbaset_mujawwad","minsh_murattal","minsh_mujawwad","maher_murattal"]');
+    let downloaded = JSON.parse(localStorage.getItem('downloadedSurahs') || '{}');
+    let downloadProgress = {},
+        lastSurah = -1,
+        lastTime = 0,
+        isReaderOpen = false,
+        currentFont = localStorage.getItem('quranFont') || 'system';
+    let darkMode = localStorage.getItem('darkMode') === 'dark',
+        currentColor = localStorage.getItem('accentColor') || 'gold';
+    let retryLock = false,
+        searchTarget = 'readers',
+        activeXHR = null,
+        isDownloadingMultiple = false,
+        downloadCancel = false;
+    let surahAvailability = {},
+        checkingTimers = {},
+        confirmIdx = -1;
+    let fontAwesomeLoaded = false,
+        deferredPrompt = null,
+        isWebViewEnv = false;
+    const TOTAL_SURAHS = 114;
+    const MAX_RETRY_ATTEMPTS = 3;
+    const CACHE_TIMEOUT = 8000;
+    const CACHE_TTL = 7 * 24 * 60 * 60 * 1000,
+        textCache = new Map();
+    const $ = id => document.getElementById(id);
+    const currentYear = new Date().getFullYear();
+    document.querySelectorAll('#yearDisplay, #menuYearDisplay, #welcomeYearDisplay').forEach(el => el.textContent = currentYear);
+
+    const colorSchemes = { gold: { gold: '#c9a84c', 'gold-light': '#e0c878', 'gold-dark': '#a8862a' }, green: { gold: '#4caf50', 'gold-light': '#81c784', 'gold-dark': '#388e3c' }, blue: { gold: '#2196f3', 'gold-light': '#64b5f6', 'gold-dark': '#1976d2' }, purple: { gold: '#9c27b0', 'gold-light': '#ba68c8', 'gold-dark': '#7b1fa2' }, red: { gold: '#f44336', 'gold-light': '#e57373', 'gold-dark': '#d32f2f' }, orange: { gold: '#ff9800', 'gold-light': '#ffb74d', 'gold-dark': '#f57c00' }, teal: { gold: '#009688', 'gold-light': '#4db6ac', 'gold-dark': '#00796b' }, pink: { gold: '#e91e63', 'gold-light': '#f06292', 'gold-dark': '#c2185b' }, indigo: { gold: '#3f51b5', 'gold-light': '#7986cb', 'gold-dark': '#303f9f' }, brown: { gold: '#795548', 'gold-light': '#a1887f', 'gold-dark': '#5d403f' } };
+    var currentAyahText = '';
+
+    const activeDownloads = {};
+
+    function isWebView() { return window.navigator && window.navigator.userAgent && window.navigator.userAgent.toLowerCase().indexOf('wv') > -1; }
+    isWebViewEnv = isWebView();
+
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (result) {
+            const r = parseInt(result[1], 16);
+            const g = parseInt(result[2], 16);
+            const b = parseInt(result[3], 16);
+            return r + ', ' + g + ', ' + b;
+        }
+        return '201, 168, 76';
+    }
+
+    function applyColor(color) {
+        currentColor = color;
+        const scheme = colorSchemes[color];
+        const root = document.documentElement;
+        root.style.setProperty('--gold', scheme.gold);
+        root.style.setProperty('--gold-light', scheme['gold-light']);
+        root.style.setProperty('--gold-dark', scheme['gold-dark']);
+        const rgb = hexToRgb(scheme.gold);
+        root.style.setProperty('--gold-rgb', rgb);
+        localStorage.setItem('accentColor', color);
+        document.querySelectorAll('#colorPicker .color-dot').forEach(d => d.classList.toggle('active', d.dataset.color === color));
+        const toast = document.getElementById('toast');
+        if (toast) {
+            toast.style.background = scheme.gold;
+        }
+    }
+
+    function updateThemeColorMeta() { const meta = document.getElementById('themeColorMeta'); if (meta) meta.content = darkMode ? '#0d0d0d' : '#f5f0eb'; }
+
+    function showToast(message, type, duration) {
+        type = type || 'default';
+        duration = duration || 2000;
+        const t = $('toast');
+        if (!t) return;
+        t.className = 'toast';
+        const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️', default: '' };
+        const cleanMsg = message.replace(/^[✅❌⚠️ℹ️📦🗑️⏳⏹️🔄▶️⬇️🗑️]+\s*/, '');
+        const icon = icons[type] || '';
+        t.innerHTML = icon ? '<span>' + icon + ' ' + cleanMsg + '</span>' : '<span>' + cleanMsg + '</span>';
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        if (duration > 0) {
+            t._timer = setTimeout(function() {
+                t.classList.remove('show');
+            }, duration);
+        }
+    }
+
+    function toast(msg, duration) { showToast(msg, 'default', duration || 2000); }
+    function toastSuccess(msg, duration) { showToast(msg, 'success', duration || 1800); }
+    function toastError(msg, duration) { showToast(msg, 'error', duration || 3000); }
+    function toastWarning(msg, duration) { showToast(msg, 'warning', duration || 2500); }
+    function toastInfo(msg, duration) { showToast(msg, 'info', duration || 2000); }
+
+    function showAlertHtml(html, onConfirm) {
+        const overlay = $('customAlert'),
+            msgEl = $('alertMessage');
+        if (!overlay || !msgEl) return;
+        msgEl.innerHTML = html;
+        overlay.classList.remove('hidden');
+        overlay.style.display = 'flex';
+        overlay.style.background = 'rgba(0,0,0,0.7)';
+        overlay.style.backdropFilter = 'blur(6px)';
+        overlay.style.WebkitBackdropFilter = 'blur(6px)';
+        overlay.style.zIndex = '400';
+        document.body.classList.add('no-scroll');
+        var cleanup = function() {
+            overlay.classList.add('hidden');
+            overlay.style.display = '';
+            document.body.classList.remove('no-scroll');
+            $('alertConfirm').removeEventListener('click', confirmHandler);
+            $('alertCancel').removeEventListener('click', cancelHandler);
+        };
+        var confirmHandler = function() {
+            cleanup();
+            if (onConfirm) onConfirm();
+        };
+        var cancelHandler = function() {
+            cleanup();
+        };
+        $('alertConfirm').addEventListener('click', confirmHandler);
+        $('alertCancel').addEventListener('click', cancelHandler);
+    }
+
+    function getReader(id) { return readerEntries.find(function(r) { return r.id === id; }); }
+    function getReaderUrl(id, idx) {
+        var reader = getReader(id);
+        if (!reader) return '';
+        return reader.url + String(idx + 1).padStart(3, '0') + '.mp3';
+    }
+    function getRadioUrl(id) {
+        var reader = getReader(id);
+        return reader ? reader.radio : '';
+    }
+    function getReaderName(id) {
+        var r = getReader(id);
+        return r ? r.name : '';
+    }
+    function formatTime(s) {
+        if (isNaN(s) || !isFinite(s)) return '00:00';
+        var m = Math.floor(s / 60),
+            sec = Math.floor(s % 60);
+        return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    }
+    function formatSize(bytes) {
+        if (bytes === 0 || !bytes) return 'غير معروف';
+        var sizes = ['ب', 'ك.ب', 'م.ب', 'ج.ب'];
+        var i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+    }
+
+    function fetchWithTimeout(url, options) {
+        options = options || {};
+        var timeout = options.timeout || 5000;
+        var controller = new AbortController();
+        var timeoutId = setTimeout(function() {
+            try { controller.abort(); } catch (e) {}
+        }, timeout);
+        var fetchOptions = {
+            method: options.method || 'GET',
+            headers: options.headers || {},
+            signal: controller.signal
+        };
+        return fetch(url, fetchOptions).then(function(response) {
+            clearTimeout(timeoutId);
+            return response;
+        }).catch(function(error) {
+            clearTimeout(timeoutId);
+            throw error;
+        });
+    }
+
+    function normalizeText(text) {
+        return text.replace(/[\u064B-\u065F\u0670]/g, '')
+                   .replace(/آ/g, 'ا')
+                   .replace(/أ/g, 'ا')
+                   .replace(/إ/g, 'ا')
+                   .replace(/ٱ/g, 'ا')
+                   .replace(/ة/g, 'ه')
+                   .replace(/ى/g, 'ي')
+                   .replace(/\s+/g, ' ')
+                   .trim();
+    }
+
+    let networkOnline = navigator.onLine;
+    let networkPollingInterval = null;
+    let networkCheckAbort = null;
+
+    function updateNetworkIndicator() {
+        var indicator = document.getElementById('networkIndicator');
+        var status = document.getElementById('networkStatus');
+        if (!indicator || !status) return;
+        if (networkOnline) {
+            indicator.className = 'network-indicator online';
+            status.innerHTML = '<i class="fas fa-wifi" style="font-size:1.2rem;"></i>';
+            status.title = 'متصل بالإنترنت';
+        } else {
+            indicator.className = 'network-indicator offline';
+            status.innerHTML = '<div style="position:relative;display:inline-block;"><i class="fas fa-wifi" style="font-size:1.2rem;opacity:0.5;"></i><i class="fas fa-times" style="position:absolute;top:-6px;right:-6px;font-size:0.8rem;color:#e74c3c;background:var(--bg);border-radius:50%;padding:1px;"></i></div>';
+            status.title = 'غير متصل بالإنترنت';
+        }
+    }
+
+    window.addEventListener('online', function() {
+        if (!networkOnline) {
+            networkOnline = true;
+            updateNetworkIndicator();
+            toastInfo('✅ تم استعادة الاتصال بالإنترنت');
+            if (verifyCancelFlag) {
+                verifyCancelFlag = false;
+                startCheckingAvailability();
+            }
+        }
+    });
+
+    window.addEventListener('offline', function() {
+        if (networkOnline) {
+            networkOnline = false;
+            updateNetworkIndicator();
+            toastWarning('⚠️ تم فقدان الاتصال بالإنترنت');
+        }
+    });
+
+    function checkNetworkViaPing() {
+        if (!isWebViewEnv && networkOnline) return;
+        if (networkCheckAbort) {
+            try { networkCheckAbort.abort(); } catch (e) {}
+            networkCheckAbort = null;
+        }
+        var controller = new AbortController();
+        networkCheckAbort = controller;
+        var timeoutId = setTimeout(function() {
+            try { controller.abort(); } catch (e) {}
+        }, 5000);
+        var urls = [
+            'https://www.google.com/favicon.ico',
+            'https://www.cloudflare.com/favicon.ico',
+            'https://1.1.1.1/cdn-cgi/trace'
+        ];
+        var success = false;
+        urls.forEach(function(url, index) {
+            if (success) return;
+            fetch(url, {
+                method: 'HEAD',
+                signal: controller.signal,
+                cache: 'no-store',
+                mode: 'no-cors'
+            }).then(function() {
+                clearTimeout(timeoutId);
+                if (!success) {
+                    success = true;
+                    if (!networkOnline) {
+                        networkOnline = true;
+                        updateNetworkIndicator();
+                        toastInfo('✅ تم استعادة الاتصال بالإنترنت');
+                        if (verifyCancelFlag) {
+                            verifyCancelFlag = false;
+                            startCheckingAvailability();
+                        }
+                    }
+                    networkCheckAbort = null;
+                }
+            }).catch(function(error) {
+                if (error.name === 'AbortError') {
+                    clearTimeout(timeoutId);
+                    networkCheckAbort = null;
+                    return;
+                }
+                if (index === urls.length - 1 && !success) {
+                    clearTimeout(timeoutId);
+                    if (networkOnline) {
+                        networkOnline = false;
+                        updateNetworkIndicator();
+                        toastWarning('⚠️ تم فقدان الاتصال بالإنترنت');
+                    }
+                    networkCheckAbort = null;
+                }
+            });
+        });
+    }
+
+    function startNetworkPolling() {
+        if (networkPollingInterval) {
+            clearInterval(networkPollingInterval);
+            networkPollingInterval = null;
+        }
+        var interval = isWebViewEnv ? 3000 : 10000;
+        checkNetworkViaPing();
+        networkPollingInterval = setInterval(function() {
+            if (!document.hidden) {
+                checkNetworkViaPing();
+            }
+        }, interval);
+    }
+
+    function stopNetworkPolling() {
+        if (networkPollingInterval) {
+            clearInterval(networkPollingInterval);
+            networkPollingInterval = null;
+        }
+        if (networkCheckAbort) {
+            try { networkCheckAbort.abort(); } catch (e) {}
+            networkCheckAbort = null;
+        }
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            checkNetworkViaPing();
+            if (!networkPollingInterval) {
+                startNetworkPolling();
+            }
+        } else {
+            if (networkPollingInterval) {
+                clearInterval(networkPollingInterval);
+                networkPollingInterval = null;
+            }
+            if (networkCheckAbort) {
+                try { networkCheckAbort.abort(); } catch (e) {}
+                networkCheckAbort = null;
+            }
+        }
+    });
+
+    document.getElementById('networkIndicator').addEventListener('click', function() {
+        if (networkOnline) {
+            toastInfo('متصل بالإنترنت');
+        } else {
+            toastWarning('غير متصل بالإنترنت');
+            checkNetworkViaPing();
+        }
+    });
+
+    updateNetworkIndicator();
+    startNetworkPolling();
+
+    function applyIconsToElement(el) {
+        if (!el) return;
+        const icon = el.dataset.icon;
+        if (icon) {
+            if (fontAwesomeLoaded) {
+                el.className = 'fas fa-' + icon;
+                el.textContent = '';
+            } else {
+                const fallbackMap = {
+                    'play': '▶', 'pause': '⏸', 'stop': '⏹', 'download': '⬇', 'star': '★', 'book': '📖',
+                    'wifi': '📶', 'search': '🔍', 'filter': '☰', 'radio': '📻', 'broadcast': '📡',
+                    'hourglass-half': '⏳', 'moon': '☾', 'sun': '☀', 'adjust': '⚙', 'sliders-h': '≡',
+                    'palette': '◉', 'font': 'Aa', 'arrows-alt': '↕', 'chart-simple': '▣', 'share-alt': '⇤',
+                    'redo': '↻', 'list': '☰', 'check-circle': '✓', 'info-circle': 'ℹ', 'exclamation-triangle': '⚠',
+                    'question-circle': '?', 'home': '⌂', 'step-backward': '◄', 'step-forward': '►',
+                    'volume-up': '🔊', 'microphone': '🎤', 'book-open': '📖', 'sign-in-alt': '⌂',
+                    'file-download': '⤓', 'plus-circle': '⊕', 'shield-alt': '◈', 'file-alt': '📄',
+                    'redo-alt': '↻', 'arrow-right': '→', 'chevron-left': '◄', 'chevron-right': '►',
+                    'minus': '−', 'plus': '+', 'sync': '⟳', 'heart': '♥', 'bookmark': '♦',
+                    'headphones': '🎧', 'arrow-left': '←', 'stop-circle': '⊗', 'quran': '📖',
+                    'bars': '☰', 'times': '✕', 'chevron-down': '▼', 'chevron-up': '▲', 'comment': '💬'
+                };
+                if (fallbackMap[icon]) {
+                    el.textContent = fallbackMap[icon];
+                    el.className = 'fallback-icon';
+                    el.style.fontSize = 'inherit';
+                    el.style.fontWeight = 'bold';
+                }
+            }
+        }
+    }
+
+    function applyIconsToAll() {
+        document.querySelectorAll('[data-icon]').forEach(el => applyIconsToElement(el));
+    }
+
+    let iconLoadPromise = null;
+    function loadFontAwesome() {
+        if (fontAwesomeLoaded) return Promise.resolve();
+        if (iconLoadPromise) return iconLoadPromise;
+        iconLoadPromise = new Promise(function(resolve, reject) {
+            var isLoaded = localStorage.getItem('fontAwesomeLoaded') === 'true';
+            var version = localStorage.getItem('fontAwesomeVersion');
+            var timestamp = parseInt(localStorage.getItem('fontAwesomeTimestamp') || '0');
+            var isExpired = (Date.now() - timestamp) > 7 * 24 * 60 * 60 * 1000;
+            if (isLoaded && version === '6.5.0' && !isExpired) {
+                fontAwesomeLoaded = true;
+                applyIconsToAll();
+                resolve();
+                return;
+            }
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
+            link.id = 'font-awesome-css';
+            document.head.appendChild(link);
+            var timeoutId = setTimeout(function() {
+                link.onload = null;
+                link.onerror = null;
+                fontAwesomeLoaded = false;
+                applyIconsToAll();
+                resolve();
+            }, 8000);
+            link.onload = function() {
+                clearTimeout(timeoutId);
+                fontAwesomeLoaded = true;
+                try {
+                    localStorage.setItem('fontAwesomeLoaded', 'true');
+                    localStorage.setItem('fontAwesomeVersion', '6.5.0');
+                    localStorage.setItem('fontAwesomeTimestamp', Date.now().toString());
+                } catch (e) {}
+                applyIconsToAll();
+                resolve();
+            };
+            link.onerror = function() {
+                clearTimeout(timeoutId);
+                fontAwesomeLoaded = false;
+                applyIconsToAll();
+                resolve();
+            };
+        });
+        return iconLoadPromise;
+    }
+
+    var iconObserver = null;
+    function startIconObserver() {
+        if (iconObserver) iconObserver.disconnect();
+        iconObserver = new MutationObserver(function() {
+            document.querySelectorAll('[data-icon]:not(.processed)').forEach(function(el) {
+                applyIconsToElement(el);
+                el.classList.add('processed');
+            });
+        });
+        iconObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFontAwesome().then(function() {
+            startIconObserver();
+        });
+    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { loadFontAwesome(); });
+    } else {
+        loadFontAwesome();
+    }
+
+    async function syncSurahWithCache(readerId, idx) {
+        const url = getReaderUrl(readerId, idx);
+        if (!url) return false;
+        try {
+            const cache = await caches.open('quran-audio');
+            const cachedResponse = await cache.match(url);
+            const isInCache = !!cachedResponse;
+            if (isInCache) {
+                let size = 0;
+                try {
+                    const blob = await cachedResponse.blob();
+                    size = blob.size;
+                } catch (e) {}
+                if (!downloaded[readerId]) downloaded[readerId] = {};
+                if (!downloaded[readerId][idx] || !downloaded[readerId][idx].downloaded || downloaded[readerId][idx].size !== size) {
+                    downloaded[readerId][idx] = {
+                        downloaded: true,
+                        size: size || 0,
+                        date: new Date().toISOString()
+                    };
+                    debouncedSaveState();
+                }
+            } else {
+                if (downloaded[readerId] && downloaded[readerId][idx] && downloaded[readerId][idx].downloaded) {
+                    delete downloaded[readerId][idx];
+                    debouncedSaveState();
+                }
+            }
+            return isInCache;
+        } catch (error) {
+            return downloaded[readerId]?.[idx]?.downloaded || false;
+        }
+    }
+
+    async function calculateAllSurahSizes() {
+        try {
+            const cache = await caches.open('quran-audio');
+            const keys = await cache.keys();
+            let updated = 0;
+            for (const request of keys) {
+                const url = request.url;
+                for (const reader of readerEntries) {
+                    if (url.startsWith(reader.url)) {
+                        const idx = parseInt(url.replace(reader.url, '').replace('.mp3', '')) - 1;
+                        if (idx >= 0 && idx < 114) {
+                            const response = await cache.match(request);
+                            if (response) {
+                                try {
+                                    const blob = await response.blob();
+                                    if (blob.size > 0) {
+                                        if (!downloaded[reader.id]) downloaded[reader.id] = {};
+                                        if (!downloaded[reader.id][idx] || downloaded[reader.id][idx].size !== blob.size) {
+                                            downloaded[reader.id][idx] = {
+                                                downloaded: true,
+                                                size: blob.size,
+                                                date: new Date().toISOString()
+                                            };
+                                            updated++;
+                                        }
+                                    }
+                                } catch (e) {}
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            if (updated > 0) {
+                debouncedSaveState();
+            }
+        } catch (e) {}
+    }
+
+    async function loadQuranTexts() {
+        if (quranTexts) return quranTexts;
+        const cached = localStorage.getItem('quranTexts');
+        if (cached) {
+            try {
+                quranTexts = JSON.parse(cached);
+                return quranTexts;
+            } catch (e) {}
+        }
+        quranTexts = [];
+        for (let i = 1; i <= 114; i++) {
+            try {
+                const response = await fetch(`https://api.alquran.cloud/v1/surah/${i}/ar.alafasy`);
+                const data = await response.json();
+                quranTexts.push({
+                    surah: i,
+                    name: surahNames[i-1],
+                    ayahs: data.data.ayahs.map((a, idx) => ({
+                        number: idx + 1,
+                        text: a.text
+                    }))
+                });
+            } catch (e) {}
+        }
+        try {
+            localStorage.setItem('quranTexts', JSON.stringify(quranTexts));
+        } catch (e) {}
+        return quranTexts;
+    }
+
+    async function searchAyahInAllQuran(query) {
+        if (!quranTexts) {
+            await loadQuranTexts();
+        }
+        if (!query || query.length < 2) return [];
+        const results = [];
+        const normalizedQuery = normalizeText(query);
+        var searchTerms = normalizedQuery.split(' ').filter(t => t.length > 0);
+        var searchByExact = searchTerms.length > 1;
+        for (const surah of quranTexts) {
+            for (const ayah of surah.ayahs) {
+                const normalizedText = normalizeText(ayah.text);
+                var match = false;
+                if (searchByExact) {
+                    var allTermsMatch = true;
+                    for (const term of searchTerms) {
+                        if (!normalizedText.includes(term)) {
+                            allTermsMatch = false;
+                            break;
+                        }
+                    }
+                    if (allTermsMatch) {
+                        match = true;
+                    }
+                } else {
+                    if (normalizedText.includes(searchTerms[0])) {
+                        match = true;
+                    }
+                }
+                if (match) {
+                    var score = 0;
+                    for (const term of searchTerms) {
+                        if (normalizedText.includes(term)) {
+                            score++;
+                        }
+                    }
+                    results.push({
+                        surah: surah.surah,
+                        surahName: surah.name,
+                        ayah: ayah.number,
+                        text: ayah.text,
+                        score: score
+                    });
+                }
+            }
+        }
+        results.sort((a, b) => b.score - a.score);
+        return results;
+    }
+
+    function highlightText(text, query) {
+        const normalizedQuery = normalizeText(query);
+        const terms = normalizedQuery.split(' ').filter(t => t.length > 0);
+        let result = text;
+        for (const term of terms) {
+            const regex = new RegExp(term, 'gi');
+            result = result.replace(regex, match => `<span class="highlight-term">${match}</span>`);
+        }
+        return result;
+    }
+
+    function renderAyahSearchResults(results, query) {
+        const container = document.getElementById('readerSearchResults');
+        container.innerHTML = '';
+        container.classList.add('show');
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div class="reader-search-item" style="color:var(--text-secondary);text-align:center;padding:1rem 0;font-size:0.8rem;">
+                    🔍 لا توجد آيات تطابق "<strong>${query}</strong>"
+                </div>
+            `;
+            return;
+        }
+        const limited = results.slice(0, 20);
+        let resultsHtml = '';
+        limited.forEach((result, index) => {
+            const highlightedText = highlightText(result.text, query);
+            resultsHtml += `
+                <div class="reader-search-item ayah-result-item" data-surah="${result.surah}" data-ayah="${result.ayah}">
+                    <div class="ayah-result-content">
+                        <span class="ayah-text">${highlightedText}</span>
+                        <div class="ayah-meta">
+                            <span class="ayah-location">📖 ${result.surahName} (الآية ${result.ayah})</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });

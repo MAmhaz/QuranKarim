@@ -1,0 +1,1002 @@
+var menuResetApp = document.getElementById('menuResetApp');
+    if (menuResetApp) menuResetApp.addEventListener('click', function() { toggleSideMenu(false);
+        showResetModal(); });
+
+    var menuShareApp = $('menuShareApp');
+    if (menuShareApp) menuShareApp.addEventListener('click', function() {
+        toggleSideMenu(false);
+        var shareText =
+            '📱 اسم التطبيق: القرآن الكريم\n\n👨‍💻 اسم المطور: منجد أمهز\n\n📖 الوصف: استمع وتدبّر القرآن الكريم بأصوات أكثر من ١٠٠ قارئ من مختلف أنحاء العالم. إمكانية الاستماع المباشر للسور، راديو حي، تنزيل السور، قراءة الآيات مع التفسير، ومفضلة للسور والقراء.\n\n🔗 الرابط: https://mamhaz.github.io/QuranKarim';
+        if (navigator.share) {
+            navigator.share({ title: 'القرآن الكريم - منجد أمهز', text: shareText }).catch(function() {});
+        } else {
+            navigator.clipboard.writeText(shareText).then(function() {
+                toastSuccess('تم نسخ معلومات التطبيق للمشاركة');
+            }).catch(function() { toastError('تعذر المشاركة'); });
+        }
+    });
+
+    var menuHelp = $('menuHelp'),
+        helpModal = document.getElementById('helpModal');
+    if (menuHelp && helpModal) {
+        menuHelp.addEventListener('click', function() {
+            toggleSideMenu(false);
+            openModalUniversal('helpModal');
+            var dontShowContainer = document.querySelector('.help-dont-show-container');
+            if (dontShowContainer) {
+                if (localStorage.getItem('showHelp') === 'false') {
+                    dontShowContainer.style.display = 'none';
+                } else {
+                    dontShowContainer.style.display = 'flex';
+                }
+            }
+        });
+    }
+
+    var helpClose = document.getElementById('helpClose');
+    if (helpClose) {
+        helpClose.addEventListener('click', function() {
+            closeModalUniversal('helpModal');
+            var helpDontShow = document.getElementById('helpDontShowAgain');
+            if (helpDontShow && helpDontShow.checked) localStorage.setItem('showHelp', 'false');
+        });
+    }
+
+    var resetActions = { readers: false, surahs: false, downloads: false },
+        currentCaptcha = '';
+
+    function generateRandomCode() {
+        var length = Math.random() > 0.5 ? 4 : 5;
+        var code = '';
+        for (var i = 0; i < length; i++) code += Math.floor(Math.random() * 10);
+        return code;
+    }
+
+    function openResetModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (!modal) return;
+        modal.style.display = 'flex';
+        modal.classList.add('show');
+        lockBodyScroll();
+        document.getElementById('mainApp').classList.add('blurred');
+        pushWindow(modalId);
+        history.pushState({ modal: modalId }, '', window.location.href);
+    }
+
+    function closeResetModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (!modal) return;
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        windowStack = windowStack.filter(function(w) { return w !== modalId; });
+        if (windowStack.length === 0) {
+            unlockBodyScroll();
+            document.getElementById('mainApp').classList.remove('blurred');
+        }
+        if (history.state && history.state.modal === modalId) {
+            history.replaceState({ modal: windowStack.length > 0 ? windowStack[windowStack.length - 1] : null }, '', window.location.href);
+        }
+    }
+
+    async function updateDownloadSize() {
+        var count = 0,
+            totalSize = 0;
+        for (var readerId in downloaded) {
+            for (var surah in downloaded[readerId]) {
+                if (downloaded[readerId][surah] && downloaded[readerId][surah].downloaded) {
+                    count++;
+                    if (downloaded[readerId][surah].size) totalSize += downloaded[readerId][surah].size;
+                }
+            }
+        }
+        if (count > 0 && totalSize === 0) {
+            try {
+                var cache = await caches.open('quran-audio');
+                var keys = await cache.keys();
+                for (var request of keys) {
+                    var response = await cache.match(request);
+                    if (response) {
+                        var blob = await response.blob();
+                        totalSize += blob.size;
+                    }
+                }
+            } catch (e) {}
+        }
+        var label = document.getElementById('resetDownloadsLabel');
+        if (label) {
+            if (count === 0) label.textContent = 'مسح السور المُنزّلة (0 سورة)';
+            else if (totalSize > 0) label.textContent = 'مسح السور المُنزّلة (' + count + ' سورة - ' + (
+                totalSize / (1024 * 1024)).toFixed(1) + ' م.ب)';
+            else label.textContent = 'مسح السور المُنزّلة (' + count + ' سورة - حجم غير معروف)';
+        }
+    }
+
+    function showResetModal() {
+        updateDownloadSize();
+        document.getElementById('resetFavReaders').checked = true;
+        document.getElementById('resetFavSurahs').checked = true;
+        document.getElementById('resetDownloads').checked = true;
+        openResetModal('resetModal');
+    }
+
+    function hideResetModal() { closeResetModal('resetModal'); }
+
+    function showVerificationModal() {
+        hideResetModal();
+        currentCaptcha = generateRandomCode();
+        document.getElementById('captchaCode').textContent = currentCaptcha;
+        document.getElementById('captchaInput').value = '';
+        document.getElementById('verifyError').style.display = 'none';
+        openResetModal('verifyModal');
+        setTimeout(function() { document.getElementById('captchaInput').focus(); }, 300);
+    }
+
+    function cancelVerification() { closeResetModal('verifyModal');
+        showResetModal(); }
+
+    function executeReset() {
+        resetActions.readers = document.getElementById('resetFavReaders').checked;
+        resetActions.surahs = document.getElementById('resetFavSurahs').checked;
+        resetActions.downloads = document.getElementById('resetDownloads').checked;
+        if (!resetActions.readers && !resetActions.surahs && !resetActions.downloads) {
+            toastWarning('يرجى اختيار إجراء واحد على الأقل');
+            return;
+        }
+        showVerificationModal();
+    }
+
+    var savedScrollPos = 0;
+
+    function lockBodyScroll() {
+        savedScrollPos = window.scrollY || window.pageYOffset;
+        document.body.style.top = '-' + savedScrollPos + 'px';
+        document.body.classList.add('reset-modal-open');
+    }
+
+    function unlockBodyScroll() {
+        document.body.classList.remove('reset-modal-open');
+        document.body.style.top = '';
+        window.scrollTo(0, savedScrollPos);
+    }
+
+    function verifyAndExecute() {
+        var input = document.getElementById('captchaInput').value.trim();
+        if (input === currentCaptcha) {
+            closeResetModal('verifyModal');
+            if (resetActions.readers) {
+                var defaultFavs = ["abdulbaset_murattal", "abdulbaset_mujawwad", "minsh_murattal",
+                    "minsh_mujawwad", "maher_murattal"
+                ];
+                favReaders = defaultFavs.filter(function(id) { return getReader(id); });
+                localStorage.setItem('favReaders', JSON.stringify(favReaders));
+                toastSuccess('تم إعادة تعيين تفضيل القراء إلى الافتراضي');
+            }
+            if (resetActions.surahs) {
+                favSurahs = [];
+                toastSuccess('تم إعادة تعيين تفضيل السور');
+            }
+            if (resetActions.downloads) {
+                downloaded = {};
+                caches.open('quran-audio').then(function(cache) {
+                    cache.keys().then(function(keys) { keys.forEach(function(k) { cache.delete(k); }); });
+                });
+                toastSuccess('تم مسح جميع السور المُنزّلة');
+            }
+            debouncedSaveState();
+            renderReaderList();
+            renderAllSurahs();
+            updateFavReaderStar();
+            toastSuccess('تم إعادة تعيين التطبيق بنجاح');
+        } else {
+            document.getElementById('verifyError').style.display = 'block';
+            document.getElementById('captchaInput').value = '';
+            document.getElementById('captchaInput').focus();
+            currentCaptcha = generateRandomCode();
+            document.getElementById('captchaCode').textContent = currentCaptcha;
+            setTimeout(function() { document.getElementById('verifyError').style.display = 'none'; }, 3000);
+        }
+    }
+
+    var resetCancel = document.getElementById('resetCancel');
+    if (resetCancel) resetCancel.addEventListener('click', hideResetModal);
+
+    var resetConfirm = document.getElementById('resetConfirm');
+    if (resetConfirm) resetConfirm.addEventListener('click', executeReset);
+
+    var verifyCancelBtn = document.getElementById('verifyCancel');
+    if (verifyCancelBtn) verifyCancelBtn.addEventListener('click', cancelVerification);
+
+    var verifyConfirmBtn = document.getElementById('verifyConfirm');
+    if (verifyConfirmBtn) verifyConfirmBtn.addEventListener('click', verifyAndExecute);
+
+    var captchaInput = document.getElementById('captchaInput');
+    if (captchaInput) {
+        captchaInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        captchaInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyAndExecute();
+            }
+        });
+    }
+
+    document.getElementById('dlConfirmOk').addEventListener('click', function() {
+        var isMulti = document.getElementById('dlConfirmMulti').checked;
+        if (isMulti) {
+            closeModalUniversal('downloadConfirmModal');
+            showSurahSelectionModal(confirmIdx);
+        } else {
+            const downloadId = `${currentReader}_${confirmIdx}`;
+            if (activeDownloads[downloadId]) {
+                toastWarning('⚠️ التحميل جارٍ بالفعل لهذه السورة');
+                return;
+            }
+            closeModalUniversal('downloadConfirmModal');
+            startNewDownload(currentReader, confirmIdx);
+        }
+    });
+
+    document.getElementById('dlConfirmCancel').addEventListener('click', function() {
+        closeModalUniversal('downloadConfirmModal');
+    });
+
+    document.getElementById('dlConfirmMulti').addEventListener('change', function() {
+        document.getElementById('dlConfirmBtnText').textContent = this.checked ? 'اختيار السور' : 'تنزيل';
+    });
+
+    var selSelectAll = document.getElementById('selSelectAll'),
+        selDeselectAll = document.getElementById('selDeselectAll'),
+        selCancel = document.getElementById('selCancel'),
+        selDownload = document.getElementById('selDownload'),
+        dlProgressCancel = document.getElementById('dlProgressCancel'),
+        dlProgressBack = document.getElementById('dlProgressBack');
+
+    if (selSelectAll) selSelectAll.addEventListener('click', function() {
+        document.querySelectorAll('#selectionGrid input[type="checkbox"]:not(:disabled)').forEach(function(cb) {
+            cb.checked = true;
+        });
+        updateSelectionStats();
+    });
+
+    if (selDeselectAll) selDeselectAll.addEventListener('click', function() {
+        document.querySelectorAll('#selectionGrid input[type="checkbox"]').forEach(function(cb) { cb.checked =
+                false; });
+        updateSelectionStats();
+    });
+
+    if (selCancel) selCancel.addEventListener('click', function() {
+        closeModalUniversal('surahSelectionModal');
+        showDownloadConfirm(confirmIdx);
+    });
+
+    if (selDownload) selDownload.addEventListener('click', downloadSelectedSurahs);
+
+    if (dlProgressCancel) dlProgressCancel.addEventListener('click', function() {
+        downloadCancel = true;
+        abortCurrentDownload();
+        toastInfo('تم إيقاف التنزيل');
+        isDownloadingMultiple = false;
+        closeModalUniversal('downloadProgressOverlay');
+        unlockBodyScroll();
+        document.getElementById('mainApp').classList.remove('blurred');
+    });
+
+    if (dlProgressBack) dlProgressBack.addEventListener('click', function() {
+        closeModalUniversal('downloadProgressOverlay');
+        unlockBodyScroll();
+        document.getElementById('mainApp').classList.remove('blurred');
+        toastInfo('التنزيل مستمر في الخلفية');
+    });
+
+    async function getCachedUrl(url) {
+        try {
+            var cache = await caches.open('quran-audio');
+            var cached = await cache.match(url);
+            if (cached) return URL.createObjectURL(await cached.blob());
+        } catch (e) {}
+        return null;
+    }
+
+    var currentFilter = 'all';
+
+    function getDownloadStats() {
+        var readerId = currentReader;
+        var count = 0;
+        var totalSize = 0;
+        if (downloaded[readerId]) {
+            for (var idx in downloaded[readerId]) {
+                if (downloaded[readerId][idx].downloaded) {
+                    count++;
+                    if (downloaded[readerId][idx].size) totalSize += downloaded[readerId][idx].size;
+                }
+            }
+        }
+        return { count: count, size: totalSize };
+    }
+
+    function filterSurahs(filter) {
+    currentFilter = filter;
+    var cards = document.querySelectorAll('.surah-card');
+    var readerId = currentReader;
+    var count = 0;
+    
+    document.querySelectorAll('.filter-option').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    
+    cards.forEach(function(card) {
+        var idx = parseInt(card.dataset.idx);
+        var isDl = downloaded[readerId] && downloaded[readerId][idx] && downloaded[readerId][idx].downloaded;
+        var status = surahAvailability[readerId]?.[idx];
+        var show = true;
+        switch(filter) {
+            case 'all': show = true; break;
+            case 'available': show = (status === 'available' || status === 'cached'); break;
+            case 'unavailable': show = (status === 'unavailable'); break;
+            case 'downloaded': show = isDl; break;
+            case 'notdownloaded': show = !isDl; break;
+        }
+        card.style.display = show ? 'flex' : 'none';
+        if (show) count++;
+    });
+    
+    var grid = document.getElementById('surahGrid');
+    var noResultMsg = document.getElementById('noFilterResult');
+    var filterName = getFilterName(filter);
+    var filterBtn = document.getElementById('filterToggleBtn');
+    
+    if (count === 0 && filter !== 'all' && grid) {
+        if (filterBtn) {
+            filterBtn.style.animation = 'pulse-filter 1.5s ease-in-out 3';
+            filterBtn.style.borderColor = 'var(--gold)';
+            setTimeout(() => {
+                filterBtn.style.animation = '';
+                filterBtn.style.borderColor = '';
+            }, 4500);
+        }
+        
+        if (!noResultMsg) {
+            noResultMsg = document.createElement('div');
+            noResultMsg.id = 'noFilterResult';
+            noResultMsg.style.cssText = 'text-align:center;padding:2.5rem 0;color:var(--text-secondary);';
+            noResultMsg.innerHTML = 
+                '🔍 لا توجد سور بفلتر "<strong style="color:var(--gold-dark);">' + filterName + '</strong>"<br>' +
+                '<span style="font-size:0.8rem;opacity:0.7;">' +
+                '💡 اضغط على <strong style="color:var(--gold);cursor:pointer;" onclick="document.getElementById(\'filterToggleBtn\').click()">' +
+                '<i class="fas fa-filter" style="font-size:0.9rem;margin:0 0.2rem;"></i> أيقونة الفلتر</strong> لتغيير الفلتر أو اختيار "<strong style="color:var(--gold);cursor:pointer;" onclick="resetFilter()">الكل</strong>"' +
+                '</span>';
+            grid.appendChild(noResultMsg);
+        } else {
+            noResultMsg.innerHTML = 
+                '🔍 لا توجد سور بفلتر "<strong style="color:var(--gold-dark);">' + filterName + '</strong>"<br>' +
+                '<span style="font-size:0.8rem;opacity:0.7;">' +
+                '💡 اضغط على <strong style="color:var(--gold);cursor:pointer;" onclick="document.getElementById(\'filterToggleBtn\').click()">' +
+                '<i class="fas fa-filter" style="font-size:0.9rem;margin:0 0.2rem;"></i> أيقونة الفلتر</strong> لتغيير الفلتر أو اختيار "<strong style="color:var(--gold);cursor:pointer;" onclick="resetFilter()">الكل</strong>"' +
+                '</span>';
+        }
+        noResultMsg.style.display = 'block';
+    } else {
+        if (noResultMsg) {
+            noResultMsg.remove();
+        }
+    }
+    
+    var countEl = document.getElementById('filterCount');
+    if (!countEl) {
+        var info = document.getElementById('searchResultsInfo');
+        if (info) {
+            var span = document.createElement('span');
+            span.id = 'filterCount';
+            span.style.cssText = 'margin-right:0.5rem;font-size:calc(.7rem*var(--text-scale));color:var(--text-secondary);';
+            info.appendChild(span);
+            countEl = span;
+        }
+    }
+    if (countEl) {
+        var total = cards.length;
+        countEl.textContent = ' (' + count + '/' + total + ')';
+    }
+    
+    var explanation = document.getElementById('filterExplanation');
+    if (!explanation) return;
+    
+    var filterNames = {
+        'all': '📋 الكل',
+        'available': '✅ المتوفرة',
+        'unavailable': '❌ غير المتوفرة',
+        'downloaded': '⬇️ المُنزّلة',
+        'notdownloaded': '📤 غير المُنزّلة'
+    };
+    
+    var descriptions = {
+        'all': 'يعرض جميع السور الـ 114 بغض النظر عن حالتها.',
+        'available': 'يعرض السور المتوفرة للاستماع مباشرة من الإنترنت للقارئ الحالي.',
+        'unavailable': 'يعرض السور غير المتوفرة للقارئ الحالي (غير موجودة على الخادم).',
+        'downloaded': 'يعرض السور التي تم تنزيلها مسبقاً على الجهاز (للاستماع دون إنترنت).',
+        'notdownloaded': 'يعرض السور التي لم يتم تنزيلها بعد (تحتاج اتصالاً بالإنترنت).'
+    };
+    
+    var repeatBehavior = {
+        'all': '🔄 <strong>التكرار:</strong> يشغل جميع السور الـ 114 بالتسلسل (1 → 2 → 3 → ... → 114 → 1).',
+        'available': '🔄 <strong>التكرار:</strong> يشغل السور المتوفرة فقط، ويتجاوز غير المتوفرة (مثال: 2 → 4 → 5 → 7).',
+        'unavailable': '🔄 <strong>التكرار:</strong> لا توجد سور للتشغيل (القائمة فارغة).',
+        'downloaded': '🔄 <strong>التكرار:</strong> يشغل السور المُنزّلة فقط، ويتجاوز غير المُنزّلة (مثال: 2 → 4 → 5 → 7).',
+        'notdownloaded': '🔄 <strong>التكرار:</strong> لا توجد سور للتشغيل (القائمة فارغة).'
+    };
+    
+    var repeatWarning = {
+        'all': '',
+        'available': '⚠️ إذا كان هناك سور غير متوفرة، سيتم تخطيها تلقائياً.',
+        'unavailable': '⚠️ هذا الفلتر يعرض السور غير المتوفرة فقط، لذا لا يمكن تشغيلها.',
+        'downloaded': '⚠️ إذا كان هناك سور غير مُنزّلة، سيتم تخطيها تلقائياً.',
+        'notdownloaded': '⚠️ هذا الفلتر يعرض السور غير المُنزّلة فقط، لذا لا يمكن تشغيلها.'
+    };
+    
+    var currentDesc = descriptions[filter] || '';
+    var currentRepeat = repeatBehavior[filter] || '';
+    var currentWarning = repeatWarning[filter] || '';
+    var visibleCount = count;
+    var totalSurahs = cards.length;
+    
+    explanation.innerHTML = 
+    '<div style="display:flex;flex-direction:column;gap:0.2rem;">' +
+    '<div style="display:flex;align-items:flex-start;gap:0.3rem;">' +
+    '<span style="font-size:0.9rem;flex-shrink:0;">ℹ️</span>' +
+    '<div style="flex:1;">' +
+    '<div><strong style="color:var(--gold-dark);font-size:0.8rem;">' + filterNames[filter] + '</strong> ' + 
+    '<span style="font-size:0.7rem;">' + currentDesc + '</span>' +
+    ' <span class="filter-count" style="background:var(--bg);padding:0.05rem 0.5rem;border-radius:1rem;font-size:0.6rem;color:var(--text-secondary);">' + visibleCount + '/' + totalSurahs + '</span></div>' +
+    '<div style="margin-top:0.1rem;font-size:0.7rem;color:var(--text-secondary);">' + currentRepeat + '</div>' +
+    (currentWarning ? '<div class="filter-warning" style="margin-top:0.05rem;font-size:0.65rem;color:#e67e22;">' + currentWarning + '</div>' : '') +
+    '</div>' +
+    '</div>' +
+    '<div class="filter-footer" style="font-size:0.6rem;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:0.15rem;margin-top:0.15rem;text-align:center;">' +
+    '💡 عند تفعيل <strong>"تكرار الكل"</strong>، سيتنقل بين السور المرئية فقط' +
+    '</div>' +
+    '</div>';
+    
+    explanation.style.display = 'block';
+    explanation.style.animation = 'fadeIn 0.3s ease';
+    
+    clearTimeout(explanation._hideTimer);
+    explanation._hideTimer = setTimeout(function() {
+        explanation.style.display = 'none';
+    }, 10000);
+}
+
+    document.getElementById('filterToggleBtn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.getElementById('filterDropdown').classList.toggle('show');
+        this.classList.toggle('open');
+    });
+
+    document.querySelectorAll('.filter-option').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var filter = this.dataset.filter;
+            document.querySelectorAll('.filter-option').forEach(function(b) {
+                b.classList.toggle('active', b.dataset.filter === filter);
+            });
+            document.getElementById('filterDropdown').classList.remove('show');
+            document.getElementById('filterToggleBtn').classList.remove('open');
+            filterSurahs(filter);
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.filter-wrapper')) {
+            document.getElementById('filterDropdown').classList.remove('show');
+            document.getElementById('filterToggleBtn').classList.remove('open');
+        }
+        if (!e.target.closest('.stats-btn')) {
+            document.getElementById('statsTooltip').classList.remove('show');
+        }
+    });
+
+    document.getElementById('statsBtn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        var tooltip = document.getElementById('statsTooltip');
+        if (tooltip.classList.contains('show')) {
+            tooltip.classList.remove('show');
+            if (history.state && history.state.modal === 'statsTooltip') {
+                history.replaceState({}, '', window.location.href);
+            }
+        } else {
+            tooltip.classList.add('show');
+            history.pushState({ modal: 'statsTooltip' }, '', window.location.href);
+        }
+        updateStatsTooltip();
+    });
+
+    function updateStatsTooltip() {
+        var done = 0;
+        var total = 0;
+        var available = 0;
+        var unavailable = 0;
+        var failed = 0;
+        var unavailableSurahs = [];
+        var failedSurahs = [];
+        var readerId = currentReader;
+        if (surahAvailability[readerId]) {
+            for (var i = 0; i < TOTAL_SURAHS; i++) {
+                if (surahAvailability[readerId][i] !== undefined) {
+                    done++;
+                    if (surahAvailability[readerId][i] === 'available' || surahAvailability[readerId][i] === 'cached') available++;
+                    else if (surahAvailability[readerId][i] === 'unavailable') {
+                        unavailable++;
+                        unavailableSurahs.push(i);
+                    } else if (surahAvailability[readerId][i] === 'failed') {
+                        failed++;
+                        failedSurahs.push(i);
+                    }
+                }
+                total++;
+            }
+        }
+        var tooltip = document.getElementById('statsTooltip');
+        if (tooltip) {
+            var downloadStats = getDownloadStats();
+            var sizeText = downloadStats.size > 0 ? formatSize(downloadStats.size) : '0';
+            var unavailableHtml = '';
+            if (unavailableSurahs.length > 0) {
+                var surahList = unavailableSurahs.map(function(idx) {
+                    return '<div class="surah-item"><span>' + (idx + 1) + '</span><span>' + surahNames[idx] + '</span></div>';
+                }).join('');
+                unavailableHtml = '<div class="unavailable-list">❌ غير متوفرة: ' + surahList + '</div>';
+            }
+            var failedHtml = '';
+            if (failedSurahs.length > 0) {
+                var failedList = failedSurahs.map(function(idx) {
+                    return '<div class="surah-item"><span>' + (idx + 1) + '</span><span>' + surahNames[idx] + '</span></div>';
+                }).join('');
+                failedHtml = '<div class="unavailable-list" style="border-right-color:#f39c12;color:#f39c12;">⚠️ فشل التحقق: ' + failedList + '</div>';
+            }
+            tooltip.innerHTML = 
+                '<div class="stat-item"><span class="label">📦 متوفر</span><span class="value">' + available + '</span></div>' +
+                '<div class="stat-item"><span class="label">❌ غير متوفر</span><span class="value">' + unavailable + '</span></div>' +
+                '<div class="stat-item"><span class="label">⚠️ فشل التحقق</span><span class="value">' + failed + '</span></div>' +
+                (unavailableHtml) +
+                (failedHtml) +
+                '<div class="stat-item"><span class="label">⬇️ مُنزّل</span><span class="value">' + downloadStats.count + ' (' + sizeText + ')</span></div>' +
+                '<button class="btn-gold-small" id="statsCloseBtn">👍 موافق</button>';
+            var closeBtn = document.getElementById('statsCloseBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    document.getElementById('statsTooltip').classList.remove('show');
+                    if (history.state && history.state.modal === 'statsTooltip') {
+                        history.replaceState({}, '', window.location.href);
+                    }
+                });
+            }
+        }
+    }
+
+    async function renderAllSurahs(force = false) {
+        if (isRendering) {
+            return;
+        }
+        if (!force && !isInitialRender && document.querySelector('.surah-card')) {
+            return;
+        }
+        isRendering = true;
+        isInitialRender = false;
+        try {
+            var grid = $('surahGrid');
+            if (!grid) {
+                isRendering = false;
+                return;
+            }
+            grid.innerHTML = '';
+            grid.removeEventListener('click', handleSurahAction);
+            var readerId = currentReader;
+            if (!surahAvailability[readerId]) surahAvailability[readerId] = {};
+            for (var i = 0; i < TOTAL_SURAHS; i++) {
+                if (!surahAvailability[readerId][i]) {
+                    surahAvailability[readerId][i] = 'pending';
+                }
+                const isInCache = await syncSurahWithCache(readerId, i);
+                var card = document.createElement('div');
+                card.className = 'surah-card';
+                card.dataset.idx = i;
+                var isFav = favSurahs.indexOf(i) !== -1;
+                var isDl = isInCache;
+                var isPartial = downloadProgress[readerId] && downloadProgress[readerId][i] !== undefined &&
+                    downloadProgress[readerId][i] < 100;
+                var status = surahAvailability[readerId] && surahAvailability[readerId][i];
+                var btnHtml = '';
+                if (isPartial) {
+                    var pct = Math.round(downloadProgress[readerId][i]);
+                    btnHtml =
+                        '<button class="download-btn downloading" data-idx="' + i +
+                        '" data-action="resume"><svg class="progress-ring" viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="16"/><circle class="fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="' +
+                        (100.53 * (1 - pct / 100)) +
+                        '"/></svg><span class="progress-text">' + pct +
+                        '%</span><span class="cancel-icon" data-idx="' + i + '">×</span></button>';
+                } else if (isDl) {
+                    btnHtml =
+                        '<button class="download-btn downloaded" data-idx="' + i +
+                        '" title="حذف التنزيل"><i data-icon="check-circle"></i></button>';
+                } else {
+                    var btnClass = 'download-btn';
+                    if (status === 'unavailable') btnClass += ' unavailable not-exist';
+                    else if (status === 'failed') btnClass += ' verify-failed';
+                    else if (status === 'pending') btnClass += ' verify-pending';
+                    btnHtml = '<button class="' + btnClass + '" data-idx="' + i +
+                        '"><i data-icon="download"></i></button>';
+                }
+                var showStatusRow = (status === 'unavailable' || status === 'failed' || status === 'pending');
+                var showRetryBtn = (status === 'failed');
+                card.innerHTML =
+                    '<div class="surah-main-row"><span class="surah-number">' + (i + 1) +
+                    '</span><span class="surah-name">' + surahNames[i] +
+                    '</span><div class="surah-actions"><button class="play-btn" data-idx="' + i +
+                    '"><i data-icon="play"></i></button><button class="read-btn" data-idx="' + i +
+                    '"><i data-icon="book"></i></button><button class="fav-btn ' + (isFav ? 'active' : '') +
+                    '" data-idx="' + i + '"><i data-icon="star"></i></button>' + btnHtml +
+                    '</div></div><div class="surah-status-row" style="' + (showStatusRow ? '' : 'display:none;') +
+                    '"><span class="checking-spinner"></span><span class="unavailability-badge">❌ غير موجودة في المصدر</span><span class="warning-badge">' + (networkOnline ? '⚠️ فشل التحقق (ضعف الاتصال)' : '⚠️ لا يوجد اتصال') + '</span>' +
+                    (showRetryBtn ?
+                        '<button class="retry-check-btn show" data-idx="' + i +
+                        '" title="إعادة التحقق"><i data-icon="sync"></i> ' + (networkOnline ? 'إعادة المحاولة' : '📡 انتظر الاتصال') + '</button>' : '') +
+                    '</div>';
+                grid.appendChild(card);
+            }
+            grid.addEventListener('click', handleSurahAction);
+            for (var j = 0; j < TOTAL_SURAHS; j++) await updateSurahCardStatus(j);
+            startCheckingAvailability();
+            applyIconsToAll();
+            filterSurahs(currentFilter);
+        } catch (error) {
+        } finally {
+            isRendering = false;
+        }
+    }
+
+    async function handleSurahAction(e) {
+        var target = e.target.closest('button');
+        if (!target) return;
+        var card = target.closest('.surah-card');
+        if (!card) return;
+        var idx = parseInt(card.dataset.idx);
+        if (isNaN(idx)) return;
+        e.stopPropagation();
+        if (target.classList.contains('play-btn')) {
+            playSurah(idx, 0);
+        } else if (target.classList.contains('read-btn')) {
+            openReader(idx);
+        } else if (target.classList.contains('fav-btn')) {
+            toggleFavSurah(idx);
+        } else if (target.classList.contains('download-btn')) {
+            var isDl = downloaded[currentReader] && downloaded[currentReader][idx] && downloaded[currentReader][idx].downloaded;
+            if (isDl) {
+                showDeleteConfirm(idx);
+                return;
+            }
+            if (idx < 0 || idx > 113) {
+                toastError('رقم سورة غير صحيح');
+                return;
+            }
+            const downloadId = `${currentReader}_${idx}`;
+            if (activeDownloads[downloadId]) {
+                showAlertHtml(
+                    `⏳ التحميل جارٍ بالفعل لسورة <strong>"${surahNames[idx]}"</strong>.<br>هل تريد إلغاء التحميل؟`,
+                    function() {
+                        const downloadInfo = activeDownloads[downloadId];
+                        if (downloadInfo && downloadInfo.xhr) {
+                            downloadInfo.xhr.abort();
+                            toastInfo('تم إلغاء تحميل "' + surahNames[idx] + '"');
+                            if (downloadProgress[currentReader]) {
+                                delete downloadProgress[currentReader][idx];
+                            }
+                            updateSurahCardStatus(idx);
+                        }
+                    }
+                );
+                return;
+            }
+            showDownloadConfirm(idx);
+        } else if (target.classList.contains('retry-check-btn')) {
+            var idx = parseInt(target.dataset.idx);
+            if (!isNaN(idx)) {
+                if (!networkOnline) {
+                    toastWarning('لا يوجد اتصال بالإنترنت');
+                    return;
+                }
+                if (surahAvailability[currentReader]) {
+                    delete surahAvailability[currentReader][idx];
+                }
+                toastInfo('جاري إعادة التحقق...');
+                target.classList.add('checking');
+                checkSurahAvailability(currentReader, idx);
+                var checkInterval = setInterval(function() {
+                    var newStatus = surahAvailability[currentReader] && surahAvailability[
+                    currentReader][idx];
+                    if (newStatus && newStatus !== 'pending') {
+                        clearInterval(checkInterval);
+                        target.classList.remove('checking');
+                        if (newStatus === 'available' || newStatus === 'cached') {
+                            toastSuccess('✅ السورة متوفرة');
+                        } else if (newStatus === 'unavailable') {
+                            toastWarning('❌ السورة غير موجودة في المصدر');
+                        } else if (newStatus === 'failed') {
+                            toastError('⚠️ فشل التحقق، تأكد من اتصالك بالإنترنت');
+                        }
+                    }
+                }, 500);
+                setTimeout(function() {
+                    clearInterval(checkInterval);
+                    target.classList.remove('checking');
+                    var finalStatus = surahAvailability[currentReader] && surahAvailability[
+                        currentReader][idx];
+                    if (!finalStatus || finalStatus === 'pending') {
+                        toastWarning('تعذر التحقق، تأكد من اتصالك بالإنترنت');
+                    }
+                }, 15000);
+            }
+        }
+    }
+
+    function playSurah(idx, startTime) {
+        startTime = startTime || 0;
+        var readerId = currentReader;
+        if (idx < 0 || idx > 113) { toastError('رقم سورة غير صحيح'); return; }
+        var status = surahAvailability[readerId] && surahAvailability[readerId][idx];
+        var url = getReaderUrl(readerId, idx);
+        
+        caches.open('quran-audio').then(function(cache) {
+            cache.match(url).then(function(response) {
+                if (response) {
+                    playSurahWithRetry(idx, 0, startTime);
+                    return;
+                }
+                if (status === 'unavailable' && repeatMode === 'all') {
+                    toastWarning('هذه السورة غير متوفرة لهذا القارئ');
+                    var visibleSurahs = [];
+                    document.querySelectorAll('.surah-card').forEach(function(card) {
+                        if (card.style.display !== 'none') {
+                            var i = parseInt(card.dataset.idx);
+                            if (!isNaN(i)) visibleSurahs.push(i);
+                        }
+                    });
+                    var currentIndex = visibleSurahs.indexOf(idx);
+                    if (currentIndex !== -1 && visibleSurahs.length > 1) {
+                        var nextIdx = (currentIndex + 1) % visibleSurahs.length;
+                        if (nextIdx !== currentIndex) {
+                            setTimeout(function() { playSurah(visibleSurahs[nextIdx], 0); }, 300);
+                            return;
+                        }
+                    }
+                    return;
+                }
+                if (status === 'failed') {
+                    toastInfo('فشل التحقق سابقاً، جاري المحاولة...');
+                }
+                playSurahWithRetry(idx, 0, startTime);
+            });
+        });
+    }
+
+    function toggleFavSurah(idx) {
+        var i = favSurahs.indexOf(idx);
+        if (i >= 0) {
+            favSurahs.splice(i, 1);
+            toastSuccess('تم إزالة من المفضلة');
+        } else {
+            favSurahs.push(idx);
+            toastSuccess('تمت الإضافة إلى المفضلة');
+        }
+        debouncedSaveState();
+        renderAllSurahs();
+    }
+
+    function startCheckingAvailability() {
+        verifyCancelFlag = false;
+        var readerId = currentReader;
+        if (!surahAvailability[readerId]) surahAvailability[readerId] = {};
+        for (var i = 0; i < TOTAL_SURAHS; i++) {
+            if (downloaded[readerId] && downloaded[readerId][i] && downloaded[readerId][i].downloaded) {
+                surahAvailability[readerId][i] = 'cached';
+                updateSurahCardStatus(i);
+            } else if (!surahAvailability[readerId][i]) {
+                surahAvailability[readerId][i] = 'pending';
+                updateSurahCardStatus(i);
+            }
+        }
+        for (var i = 0; i < TOTAL_SURAHS; i++) {
+            if (!downloaded[readerId] || !downloaded[readerId][i] || !downloaded[readerId][i].downloaded) {
+                checkSurahAvailability(readerId, i);
+            }
+        }
+    }
+
+    let verifyCancelFlag = false;
+    let verifyAbortControllers = {};
+    let verifyDone = 0;
+    let verifyTotal = 0;
+
+    function showVerifyProgress() {
+        const bar = document.getElementById('verifyProgressBar');
+        if (bar) bar.style.display = 'flex';
+        verifyCancelFlag = false;
+        const cancelBtn = document.getElementById('cancelVerificationBtn');
+        const retryBtn = document.getElementById('retryFailedBtn');
+        const manualBtn = document.getElementById('manualVerifyBtn');
+        if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+        if (retryBtn) retryBtn.style.display = 'none';
+        if (manualBtn) manualBtn.style.display = 'none';
+    }
+
+    function hideVerifyProgress() {
+        const bar = document.getElementById('verifyProgressBar');
+        if (!bar) return;
+        const status = document.getElementById('verifyProgressStatus');
+        const count = document.getElementById('verifyProgressCount');
+        const fill = document.getElementById('verifyProgressFill');
+        const retryBtn = document.getElementById('retryFailedBtn');
+        const cancelBtn = document.getElementById('cancelVerificationBtn');
+        const manualBtn = document.getElementById('manualVerifyBtn');
+        if (verifyCancelFlag) {
+            if (status) status.textContent = '⏸️ تم إلغاء التحقق';
+            if (count) count.textContent = '';
+            if (fill) fill.style.width = '0%';
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            if (retryBtn) {
+                retryBtn.style.display = 'inline-flex';
+                retryBtn.textContent = '🔄 إعادة التحقق';
+                retryBtn.onclick = function() {
+                    if (!networkOnline) {
+                        toastWarning('لا يوجد اتصال بالإنترنت');
+                        return;
+                    }
+                    verifyCancelFlag = false;
+                    cancelBtn.style.display = 'inline-flex';
+                    retryBtn.style.display = 'none';
+                    if (manualBtn) manualBtn.style.display = 'none';
+                    startCheckingAvailability();
+                };
+            }
+            if (manualBtn) manualBtn.style.display = 'none';
+            bar.style.display = 'flex';
+            return;
+        }
+        if (!networkOnline) {
+            if (status) status.textContent = '⚠️ غير متصل - انتظر عودة الإنترنت';
+            if (count) count.textContent = '';
+            if (fill) fill.style.width = '0%';
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            if (retryBtn) {
+                retryBtn.style.display = 'inline-flex';
+                retryBtn.textContent = '🔄 إعادة المحاولة';
+                retryBtn.onclick = function() {
+                    if (networkOnline) {
+                        verifyCancelFlag = false;
+                        cancelBtn.style.display = 'inline-flex';
+                        retryBtn.style.display = 'none';
+                        if (manualBtn) manualBtn.style.display = 'none';
+                        startCheckingAvailability();
+                    } else {
+                        toastWarning('لا يوجد اتصال بالإنترنت');
+                    }
+                };
+            }
+            if (manualBtn) manualBtn.style.display = 'none';
+            bar.style.display = 'flex';
+            return;
+        }
+        bar.style.display = 'none';
+        Object.values(verifyAbortControllers).forEach(controller => controller.abort());
+        verifyAbortControllers = {};
+        if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+        if (retryBtn) retryBtn.style.display = 'none';
+        if (manualBtn) manualBtn.style.display = 'none';
+    }
+
+    function updateVerifyProgress(done, total) {
+        const status = document.getElementById('verifyProgressStatus');
+        const count = document.getElementById('verifyProgressCount');
+        const fill = document.getElementById('verifyProgressFill');
+        const retryBtn = document.getElementById('retryFailedBtn');
+        const cancelBtn = document.getElementById('cancelVerificationBtn');
+        const manualBtn = document.getElementById('manualVerifyBtn');
+        if (!status || !count || !fill) return;
+        if (!networkOnline) {
+            status.textContent = '⚠️ غير متصل - انتظر عودة الإنترنت';
+            count.textContent = '';
+            fill.style.width = '0%';
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            if (retryBtn) {
+                retryBtn.style.display = 'inline-flex';
+                retryBtn.textContent = '🔄 إعادة المحاولة';
+                retryBtn.onclick = function() {
+                    if (networkOnline) {
+                        verifyCancelFlag = false;
+                        cancelBtn.style.display = 'inline-flex';
+                        retryBtn.style.display = 'none';
+                        if (manualBtn) manualBtn.style.display = 'none';
+                        startCheckingAvailability();
+                    } else {
+                        toastWarning('لا يوجد اتصال بالإنترنت');
+                    }
+                };
+            }
+            if (manualBtn) manualBtn.style.display = 'none';
+            showVerifyProgress();
+            return;
+        }
+        if (done === 0 && total === 0) {
+            status.textContent = '⏳ جاري التحقق...';
+            count.textContent = '0/114';
+            fill.style.width = '0%';
+            if (retryBtn) retryBtn.style.display = 'none';
+            if (manualBtn) manualBtn.style.display = 'none';
+            return;
+        }
+        if (done >= total) {
+            let failedCount = 0;
+            const readerId = currentReader;
+            if (surahAvailability[readerId]) {
+                for (let i = 0; i < TOTAL_SURAHS; i++) {
+                    if (surahAvailability[readerId][i] === 'failed') failedCount++;
+                }
+            }
+            if (failedCount > 0) {
+                status.textContent = `✅ تم التحقق ⚠️ ${failedCount} فشل`;
+                if (retryBtn) {
+                    retryBtn.style.display = 'inline-flex';
+                    retryBtn.textContent = `🔄 إعادة المحاولة (${failedCount})`;
+                    retryBtn.onclick = function() {
+                        retryFailedChecks();
+                    };
+                }
+                if (manualBtn) manualBtn.style.display = 'none';
+            } else {
+                status.innerHTML = '✅ تم التحقق<br><span style="font-size:0.75rem;color:var(--gold);font-weight:600;">👆 اضغط <i data-icon="chart-simple"></i> للإحصائيات</span>';
+                if (retryBtn) retryBtn.style.display = 'none';
+                if (manualBtn) manualBtn.style.display = 'none';
+                const statsBtn = document.getElementById('statsBtn');
+                if (statsBtn) {
+                    statsBtn.classList.add('pulse');
+                    setTimeout(() => {
+                        statsBtn.classList.remove('pulse');
+                    }, 5000);
+                }
+                setTimeout(() => {
+                    if (document.getElementById('verifyProgressBar')?.style.display !== 'none') {
+                        hideVerifyProgress();
+                    }
+                }, 3000);
+            }
+            count.textContent = `${done}/${total}`;
+            fill.style.width = '100%';
+            return;
+        }
+        status.textContent = `⏳ جاري التحقق... (${Math.round((done/total)*100)}%)`;
+        count.textContent = `${done}/${total}`;
+        fill.style.width = `${(done/total)*100}%`;
+        if (retryBtn) retryBtn.style.display = 'none';
+        if (manualBtn) manualBtn.style.display = 'none';
+        showVerifyProgress();
+    }
+
+    function retryFailedChecks() {
+        const readerId = currentReader;
+        if (!surahAvailability[readerId]) return;
+        if (!networkOnline) {
+            toastWarning('لا يوجد اتصال بالإنترنت');
+            return;
+        }
+        let retryCount = 0;
+        for (let i = 0; i < TOTAL_SURAHS; i++) {
+            if (surahAvailability[readerId][i] === 'failed') {
+                delete surahAvailability[readerId][i];
+                checkSurahAvailability(readerId, i);
+                retryCount++;
+            }
+        }
+        if (retryCount > 0) {
+            toastInfo(`جاري إعادة التحقق من ${retryCount} سورة...`);
+        } else {
+            toastInfo('لا توجد سور فاشلة لإعادة التحقق');
+        }
+    }
